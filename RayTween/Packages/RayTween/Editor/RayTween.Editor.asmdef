@@ -1,0 +1,18 @@
+{
+    "name": "RayTween.Editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:bc04705c38d48554a97c9badc4c0f496"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

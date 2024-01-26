@@ -1,0 +1,516 @@
+#if RAYTWEEN_SUPPORT_TMP
+using System.Buffers;
+using RayTween.Plugins;
+using UnityEngine;
+using Unity.Collections;
+using TMPro;
+using RayTween.Internal;
+using Unity.Collections.LowLevel.Unsafe;
+#if RAYTWEEN_SUPPORT_ZSTRING
+using Cysharp.Text;
+#endif
+
+namespace RayTween.Extensions
+{
+    /// <summary>
+    /// Provides binding extension methods for TMP_Text
+    /// </summary>
+    public static class RayTweenTextMeshProExtensions
+    {
+        /// <summary>
+        /// Create a tween data and bind it to TMP_Text.fontSize
+        /// </summary>
+        /// <typeparam name="TOptions">The type of special parameters given to the tween data</typeparam>
+        /// <typeparam name="TPlugin">The type of Plugin that support value animation</typeparam>
+        /// <param name="handle">This handle</param>
+        /// <param name="text">Target TMP_Text</param>
+        /// <returns>Handle of the created tween data.</returns>
+        public static TweenHandle<float, TPlugin> BindToFontSize<TPlugin>(
+            this TweenFromTo<float, TPlugin> handle, TMP_Text text)
+            where TPlugin : unmanaged, ITweenPlugin<float>
+        {
+            Error.IsNull(text);
+            return handle.Bind(text, static (target, x) => { target.fontSize = x; });
+        }
+
+        /// <summary>
+        /// Create a tween data and bind it to TMP_Text.maxVisibleCharacters
+        /// </summary>
+        /// <typeparam name="TOptions">The type of special parameters given to the tween data</typeparam>
+        /// <typeparam name="TPlugin">The type of Plugin that support value animation</typeparam>
+        /// <param name="handle">This handle</param>
+        /// <param name="text">Target TMP_Text</param>
+        /// <returns>Handle of the created tween data.</returns>
+        public static TweenHandle<int, TPlugin> BindToMaxVisibleCharacters<TPlugin>(
+            this TweenFromTo<int, TPlugin> handle, TMP_Text text)
+            where TPlugin : unmanaged, ITweenPlugin<int>
+
+        {
+            Error.IsNull(text);
+            return handle.Bind(text, static (target, x) => { target.maxVisibleCharacters = x; });
+        }
+
+        /// <summary>
+        /// Create a tween data and bind it to TMP_Text.maxVisibleLines
+        /// </summary>
+        /// <typeparam name="TOptions">The type of special parameters given to the tween data</typeparam>
+        /// <typeparam name="TPlugin">The type of Plugin that support value animation</typeparam>
+        /// <param name="handle">This handle</param>
+        /// <param name="text">Target TMP_Text</param>
+        /// <returns>Handle of the created tween data.</returns>
+        public static TweenHandle<int, TPlugin> BindToMaxVisibleLines<TPlugin>(
+            this TweenFromTo<int, TPlugin> handle, TMP_Text text)
+            where TPlugin : unmanaged, ITweenPlugin<int>
+        {
+            Error.IsNull(text);
+            return handle.Bind(text, static (target, x) => { target.maxVisibleLines = x; });
+        }
+
+        /// <summary>
+        /// Create a tween data and bind it to TMP_Text.maxVisibleWords
+        /// </summary>
+        /// <typeparam name="TOptions">The type of special parameters given to the tween data</typeparam>
+        /// <typeparam name="TPlugin">The type of Plugin that support value animation</typeparam>
+        /// <param name="handle">This handle</param>
+        /// <param name="text">Target TMP_Text</param>
+        /// <returns>Handle of the created tween data.</returns>
+        public static TweenHandle<int, TPlugin> BindToMaxVisibleWords<TPlugin>(
+            this TweenFromTo<int, TPlugin> handle, TMP_Text text)
+            where TPlugin : unmanaged, ITweenPlugin<int>
+        {
+            Error.IsNull(text);
+            return handle.Bind(text, static (target, x) => { target.maxVisibleWords = x; });
+        }
+
+        /// <summary>
+        /// Create a tween data and bind it to TMP_Text.color
+        /// </summary>
+        /// <typeparam name="TOptions">The type of special parameters given to the tween data</typeparam>
+        /// <typeparam name="TPlugin">The type of Plugin that support value animation</typeparam>
+        /// <param name="handle">This handle</param>
+        /// <param name="text">Target TMP_Text</param>
+        /// <returns>Handle of the created tween data.</returns>
+        public static TweenHandle<Color, TPlugin> BindToColor<TPlugin>(this TweenFromTo<Color, TPlugin> handle,
+            TMP_Text text)
+            where TPlugin : unmanaged, ITweenPlugin<Color>
+        {
+            Error.IsNull(text);
+            return handle.Bind(text, static (target, x) => { target.color = x; });
+        }
+
+        /// <summary>
+        /// Create a tween data and bind it to TMP_Text.color.r
+        /// </summary>
+        /// <typeparam name="TOptions">The type of special parameters given to the tween data</typeparam>
+        /// <typeparam name="TPlugin">The type of Plugin that support value animation</typeparam>
+        /// <param name="handle">This handle</param>
+        /// <param name="text">Target TMP_Text</param>
+        /// <returns>Handle of the created tween data.</returns>
+        public static TweenHandle<float, TPlugin> BindToColorR<TPlugin>(
+            this TweenFromTo<float, TPlugin> handle, TMP_Text text)
+            where TPlugin : unmanaged, ITweenPlugin<float>
+        {
+            Error.IsNull(text);
+            return handle.Bind(text, static (target, x) =>
+            {
+                var c = target.color;
+                c.r = x;
+                target.color = c;
+            });
+        }
+
+        /// <summary>
+        /// Create a tween data and bind it to TMP_Text.color.g
+        /// </summary>
+        /// <typeparam name="TOptions">The type of special parameters given to the tween data</typeparam>
+        /// <typeparam name="TPlugin">The type of Plugin that support value animation</typeparam>
+        /// <param name="handle">This handle</param>
+        /// <param name="text">Target TMP_Text</param>
+        /// <returns>Handle of the created tween data.</returns>
+        public static TweenHandle<float, TPlugin> BindToColorG<TPlugin>(
+            this TweenFromTo<float, TPlugin> handle, TMP_Text text)
+            where TPlugin : unmanaged, ITweenPlugin<float>
+        {
+            Error.IsNull(text);
+            return handle.Bind(text, static (target, x) =>
+            {
+                var c = target.color;
+                c.g = x;
+                target.color = c;
+            });
+        }
+
+        /// <summary>
+        /// Create a tween data and bind it to TMP_Text.color.b
+        /// </summary>
+        /// <typeparam name="TOptions">The type of special parameters given to the tween data</typeparam>
+        /// <typeparam name="TPlugin">The type of Plugin that support value animation</typeparam>
+        /// <param name="handle">This handle</param>
+        /// <param name="text">Target TMP_Text</param>
+        /// <returns>Handle of the created tween data.</returns>
+        public static TweenHandle<float, TPlugin> BindToColorB<TPlugin>(
+            this TweenFromTo<float, TPlugin> handle, TMP_Text text)
+            where TPlugin : unmanaged, ITweenPlugin<float>
+        {
+            Error.IsNull(text);
+            return handle.Bind(text, static (target, x) =>
+            {
+                var c = target.color;
+                c.b = x;
+                target.color = c;
+            });
+        }
+
+        /// <summary>
+        /// Create a tween data and bind it to TMP_Text.color.a
+        /// </summary>
+        /// <typeparam name="TOptions">The type of special parameters given to the tween data</typeparam>
+        /// <typeparam name="TPlugin">The type of Plugin that support value animation</typeparam>
+        /// <param name="handle">This handle</param>
+        /// <param name="text">Target TMP_Text</param>
+        /// <returns>Handle of the created tween data.</returns>
+        public static TweenHandle<float, TPlugin> BindToColorA<TPlugin>(
+            this TweenFromTo<float, TPlugin> handle, TMP_Text text)
+            where TPlugin : unmanaged, ITweenPlugin<float>
+        {
+            Error.IsNull(text);
+            return handle.Bind(text, static (target, x) =>
+            {
+                var c = target.color;
+                c.a = x;
+                target.color = c;
+            });
+        }
+
+        /// <summary>
+        /// Create a tween data and bind it to TMP_Text.text.
+        /// </summary>
+        /// <remarks>
+        /// Note: This extension method uses TMP_Text.SetText() to achieve zero allocation, so it is recommended to use this method when binding to text.
+        /// </remarks>
+        /// <typeparam name="TPlugin">The type of Plugin that support value animation</typeparam>
+        /// <param name="handle">This handle</param>
+        /// <param name="text">Target TMP_Text</param>
+        /// <returns>Handle of the created tween data.</returns>
+        public  static unsafe TweenHandle<UnsafeString,TPlugin> BindToText<TPlugin>(this TweenFromTo<UnsafeString, TPlugin> handle, TMP_Text text)
+           
+            where TPlugin : unmanaged, ITweenPlugin<UnsafeString>
+        {
+            Error.IsNull(text);
+            return handle.Bind(text, static (target, x) =>
+            { 
+             
+                var length = x.Length;
+                var buffer = ArrayPool<char>.Shared.Rent(length);
+                fixed (char* c = buffer)
+                {
+                    UnsafeUtility.MemCpy(c,x.Value.Ptr, length * 2);
+                }
+                target.SetText(buffer, 0, length);
+                ArrayPool<char>.Shared.Return(buffer);
+            });
+        }
+
+        /// <summary>
+        /// Create a tween data and bind it to TMP_Text.text.
+        /// </summary>
+        /// <remarks>
+        /// Note: This extension method uses TMP_Text.SetText() to achieve zero allocation, so it is recommended to use this method when binding to text.
+        /// </remarks>
+        /// <typeparam name="TOptions">The type of special parameters given to the tween data</typeparam>
+        /// <typeparam name="TPlugin">The type of Plugin that support value animation</typeparam>
+        /// <param name="handle">This handle</param>
+        /// <returns>Handle of the created tween data.</returns>
+        public static TweenHandle<int, TPlugin> BindToText<TPlugin>(this TweenFromTo<int, TPlugin> handle,
+            TMP_Text text)
+            where TPlugin : unmanaged, ITweenPlugin<int>
+        {
+            Error.IsNull(text);
+            return handle.Bind(text, static (target, x) =>
+            {
+                var buffer = ArrayPool<char>.Shared.Rent(128);
+                var bufferOffset = 0;
+                Utf16StringHelper.WriteInt32(ref buffer, ref bufferOffset, x);
+                target.SetText(buffer, 0, bufferOffset);
+                ArrayPool<char>.Shared.Return(buffer);
+            });
+        }
+
+        /// <summary>
+        /// Create a tween data and bind it to TMP_Text.text.
+        /// </summary>
+        /// <typeparam name="TOptions">The type of special parameters given to the tween data</typeparam>
+        /// <typeparam name="TPlugin">The type of Plugin that support value animation</typeparam>
+        /// <param name="handle">This handle</param>
+        /// <param name="text">Target TMP_Text</param>
+        /// <param name="format">Format string</param>
+        /// <returns>Handle of the created tween data.</returns>
+        public static TweenHandle<int, TPlugin> BindToText<TPlugin>(this TweenFromTo<int, TPlugin> handle,
+            TMP_Text text, string format)
+            where TPlugin : unmanaged, ITweenPlugin<int>
+        {
+            Error.IsNull(text);
+            return handle.Bind(text, format, static (target, format, x) =>
+            {
+#if RAYTWEEN_SUPPORT_ZSTRING
+                target.SetTextFormat(format, x);
+#else
+                target.text = string.Format(format, x);
+#endif
+            });
+        }
+
+
+        /// <summary>
+        /// Create a tween data and bind it to TMP_Text.text.
+        /// </summary>
+        /// <typeparam name="TOptions">The type of special parameters given to the tween data</typeparam>
+        /// <typeparam name="TPlugin">The type of Plugin that support value animation</typeparam>
+        /// <param name="handle">This handle</param>
+        /// <param name="text">Target TMP_Text</param>
+        /// <param name="format">Format string</param>
+        /// <returns>Handle of the created tween data.</returns>
+        public static TweenHandle<long, TPlugin> BindToText<TPlugin>(this TweenFromTo<long, TPlugin> handle,
+            TMP_Text text, string format)
+            where TPlugin : unmanaged, ITweenPlugin<long>
+        {
+            Error.IsNull(text);
+            return handle.Bind(text, format, static (target, format, x) =>
+            {
+#if RAYTWEEN_SUPPORT_ZSTRING
+                target.SetTextFormat(format, x);
+#else
+                target.text = string.Format(format, x);
+#endif
+            });
+        }
+
+        /// <summary>
+        /// Create a tween data and bind it to TMP_Text.text.
+        /// </summary>
+        /// <remarks>
+        /// Note: This extension method uses TMP_Text.SetText() to achieve zero allocation, so it is recommended to use this method when binding to text.
+        /// </remarks>
+        /// <typeparam name="TOptions">The type of special parameters given to the tween data</typeparam>
+        /// <typeparam name="TPlugin">The type of Plugin that support value animation</typeparam>
+        /// <param name="handle">This handle</param>
+        /// <returns>Handle of the created tween data.</returns>
+        public static TweenHandle<float, TPlugin> BindToText<TPlugin>(this TweenFromTo<float, TPlugin> handle,
+            TMP_Text text)
+            where TPlugin : unmanaged, ITweenPlugin<float>
+        {
+            const string format = "{0}";
+            Error.IsNull(text);
+            return handle.Bind(text, static (target, x) =>
+            {
+#if RAYTWEEN_SUPPORT_ZSTRING
+                target.SetTextFormat(format, x);
+#else
+                target.SetText(format, x);
+#endif
+            });
+        }
+
+        /// <summary>
+        /// Create a tween data and bind it to TMP_Text.text.
+        /// </summary>
+        /// <typeparam name="TOptions">The type of special parameters given to the tween data</typeparam>
+        /// <typeparam name="TPlugin">The type of Plugin that support value animation</typeparam>
+        /// <param name="handle">This handle</param>
+        /// <param name="text">Target TMP_Text</param>
+        /// <param name="format">Format string</param>
+        /// <returns>Handle of the created tween data.</returns>
+        public static TweenHandle<float, TPlugin> BindToText<TPlugin>(this TweenFromTo<float, TPlugin> handle,
+            TMP_Text text, string format)
+            where TPlugin : unmanaged, ITweenPlugin<float>
+        {
+            Error.IsNull(text);
+            return handle.Bind(text, format, static (target, format, x) =>
+            {
+#if RAYTWEEN_SUPPORT_ZSTRING
+                target.SetTextFormat(format, x);
+#else
+                target.text = string.Format(format, x);
+#endif
+            });
+        }
+
+
+        /// <summary>
+        /// Create tween data and bind it to the character color.
+        /// </summary>
+        /// <typeparam name="TOptions">The type of special parameters given to the tween data</typeparam>
+        /// <typeparam name="TPlugin">The type of Plugin that support value animation</typeparam>
+        /// <param name="handle">This handle</param>
+        /// <param name="text">Target TMP_Text</param>
+        /// <param name="charIndex">Target character index</param>
+        /// <returns>Handle of the created tween data.</returns>
+        public static TweenHandle<Color, TPlugin> BindToTMPCharColor<TPlugin>(
+            this TweenFromTo<Color, TPlugin> handle, TMP_Text text, int charIndex)
+            where TPlugin : unmanaged, ITweenPlugin<Color>
+        {
+            Error.IsNull(text);
+            return handle.Bind(text, (target, x) => { TextMeshProHelper.SetCharColor(target, charIndex, x); });
+        }
+
+        /// <summary>
+        /// Create tween data and bind it to the character color.r.
+        /// </summary>
+        /// <typeparam name="TOptions">The type of special parameters given to the tween data</typeparam>
+        /// <typeparam name="TPlugin">The type of Plugin that support value animation</typeparam>
+        /// <param name="handle">This handle</param>
+        /// <param name="text">Target TMP_Text</param>
+        /// <param name="charIndex">Target character index</param>
+        /// <returns>Handle of the created tween data.</returns>
+        public static TweenHandle<float, TPlugin> BindToTMPCharColorR<TPlugin>(
+            this TweenFromTo<float, TPlugin> handle, TMP_Text text, int charIndex)
+            where TPlugin : unmanaged, ITweenPlugin<float>
+        {
+            Error.IsNull(text);
+            return handle.Bind(text, (target, x) => { TextMeshProHelper.SetCharColorR(target, charIndex, x); });
+        }
+
+        /// <summary>
+        /// Create tween data and bind it to the character color.g.
+        /// </summary>
+        /// <typeparam name="TOptions">The type of special parameters given to the tween data</typeparam>
+        /// <typeparam name="TPlugin">The type of Plugin that support value animation</typeparam>
+        /// <param name="handle">This handle</param>
+        /// <param name="text">Target TMP_Text</param>
+        /// <param name="charIndex">Target character index</param>
+        /// <returns>Handle of the created tween data.</returns>
+        public static TweenHandle<float, TPlugin> BindToTMPCharColorG<TPlugin>(
+            this TweenFromTo<float, TPlugin> handle, TMP_Text text, int charIndex)
+            where TPlugin : unmanaged, ITweenPlugin<float>
+        {
+            Error.IsNull(text);
+            return handle.Bind(text, ReadOnlyIntBox.Create(charIndex),
+                static (target, box, x) => { TextMeshProHelper.SetCharColorG(target, box.Value, x); });
+        }
+
+        /// <summary>
+        /// Create tween data and bind it to the character color.b.
+        /// </summary>
+        /// <typeparam name="TOptions">The type of special parameters given to the tween data</typeparam>
+        /// <typeparam name="TPlugin">The type of Plugin that support value animation</typeparam>
+        /// <param name="handle">This handle</param>
+        /// <param name="text">Target TMP_Text</param>
+        /// <param name="charIndex">Target character index</param>
+        /// <returns>Handle of the created tween data.</returns>
+        public static TweenHandle<float, TPlugin> BindToTMPCharColorB<TPlugin>(
+            this TweenFromTo<float, TPlugin> handle, TMP_Text text, int charIndex)
+            where TPlugin : unmanaged, ITweenPlugin<float>
+        {
+            Error.IsNull(text);
+            return handle.Bind(text, ReadOnlyIntBox.Create(charIndex),
+                static (target, box, x) => { TextMeshProHelper.SetCharColorB(target, box.Value, x); });
+        }
+
+        /// <summary>
+        /// Create tween data and bind it to the character color.a.
+        /// </summary>
+        /// <typeparam name="TOptions">The type of special parameters given to the tween data</typeparam>
+        /// <typeparam name="TPlugin">The type of Plugin that support value animation</typeparam>
+        /// <param name="handle">This handle</param>
+        /// <param name="text">Target TMP_Text</param>
+        /// <param name="charIndex">Target character index</param>
+        /// <returns>Handle of the created tween data.</returns>
+        public static TweenHandle<float, TPlugin> BindToTMPCharColorA<TPlugin>(
+            this TweenFromTo<float, TPlugin> handle, TMP_Text text, int charIndex)
+            where TPlugin : unmanaged, ITweenPlugin<float>
+        {
+            Error.IsNull(text);
+            return handle.Bind(text, ReadOnlyIntBox.Create(charIndex),
+                static (target, box, x) => { TextMeshProHelper.SetCharColorA(target, box.Value, x); });
+        }
+
+        /// <summary>
+        /// Create tween data and bind it to the character position.
+        /// </summary>
+        /// <typeparam name="TOptions">The type of special parameters given to the tween data</typeparam>
+        /// <typeparam name="TPlugin">The type of Plugin that support value animation</typeparam>
+        /// <param name="handle">This handle</param>
+        /// <param name="text">Target TMP_Text</param>
+        /// <param name="charIndex">Target character index</param>
+        /// <returns>Handle of the created tween data.</returns>
+        public static TweenHandle<Vector3, TPlugin> BindToTMPCharPosition<TPlugin>(
+            this TweenFromTo<Vector3, TPlugin> handle, TMP_Text text, int charIndex)
+            where TPlugin : unmanaged, ITweenPlugin<Vector3>
+        {
+            Error.IsNull(text);
+            return handle.Bind(text, ReadOnlyIntBox.Create(charIndex),
+                static (target, box, x) => { TextMeshProHelper.SetCharPosition(target, box.Value, x); });
+        }
+        /// Create tween data and bind it to the character position.
+        /// </summary>
+        /// <typeparam name="TOptions">The type of special parameters given to the tween data</typeparam>
+        /// <typeparam name="TPlugin">The type of Plugin that support value animation</typeparam>
+        /// <param name="tweenTo">This handle</param>
+        /// <param name="text">Target TMP_Text</param>
+        /// <param name="charIndex">Target character index</param>
+        /// <returns>Handle of the created tween data.</returns>
+        public static TweenHandle<Vector3, TPlugin> BindToCharPosition<TPlugin>(
+            this TweenTo<Vector3, TPlugin> tweenTo, TMP_Text text, int charIndex)
+            where TPlugin : unmanaged, ITweenPlugin<Vector3>
+        {
+           return new TweenFromTo<Vector3, TPlugin>(default,tweenTo).BindToTMPCharPosition(text,charIndex);
+        }
+        /// <summary>
+        /// Create tween data and bind it to the character rotation.
+        /// </summary>
+        /// <typeparam name="TOptions">The type of special parameters given to the tween data</typeparam>
+        /// <typeparam name="TPlugin">The type of Plugin that support value animation</typeparam>
+        /// <param name="handle">This handle</param>
+        /// <param name="text">Target TMP_Text</param>
+        /// <param name="charIndex">Target character index</param>
+        /// <returns>Handle of the created tween data.</returns>
+        public static TweenHandle<Quaternion, TPlugin> BindToTMPCharRotation<TPlugin>(
+            this TweenFromTo<Quaternion, TPlugin> handle, TMP_Text text, int charIndex)
+            where TPlugin : unmanaged, ITweenPlugin<Quaternion>
+        {
+            Error.IsNull(text);
+            return handle.Bind(text, ReadOnlyIntBox.Create(charIndex),
+                static (target, box, x) => { TextMeshProHelper.SetCharRotation(target, box.Value, x); });
+        }
+
+        /// <summary>
+        /// Create tween data and bind it to the character rotation (using euler angles).
+        /// </summary>
+        /// <typeparam name="TOptions">The type of special parameters given to the tween data</typeparam>
+        /// <typeparam name="TPlugin">The type of Plugin that support value animation</typeparam>
+        /// <param name="handle">This handle</param>
+        /// <param name="text">Target TMP_Text</param>
+        /// <param name="charIndex">Target character index</param>
+        /// <returns>Handle of the created tween data.</returns>
+        public static TweenHandle<Vector3, TPlugin> BindToTMPCharEulerAngles<TPlugin>(
+            this TweenFromTo<Vector3, TPlugin> handle, TMP_Text text, int charIndex)
+            where TPlugin : unmanaged, ITweenPlugin<Vector3>
+        {
+            Error.IsNull(text);
+            return handle.Bind(text, ReadOnlyIntBox.Create(charIndex),
+                static (target, box, x) =>
+                {
+                    TextMeshProHelper.SetCharRotation(target, box.Value, Quaternion.Euler(x));
+                });
+        }
+
+        /// <summary>
+        /// Create tween data and bind it to the character scale.
+        /// </summary>
+        /// <typeparam name="TOptions">The type of special parameters given to the tween data</typeparam>
+        /// <typeparam name="TPlugin">The type of Plugin that support value animation</typeparam>
+        /// <param name="handle">This handle</param>
+        /// <param name="text">Target TMP_Text</param>
+        /// <param name="charIndex">Target character index</param>
+        /// <returns>Handle of the created tween data.</returns>
+        public static TweenHandle<Vector3, TPlugin> BindToTMPCharScale<TPlugin>(
+            this TweenFromTo<Vector3, TPlugin> handle, TMP_Text text, int charIndex)
+            where TPlugin : unmanaged, ITweenPlugin<Vector3>
+        {
+            Error.IsNull(text);
+            return handle.Bind(text, ReadOnlyIntBox.Create(charIndex),
+                static (target, box, x) => { TextMeshProHelper.SetCharScale(target, box.Value, x); },RelativeMode.AbsoluteScale);
+        }
+    }
+}
+#endif

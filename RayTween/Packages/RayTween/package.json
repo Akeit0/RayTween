@@ -1,0 +1,17 @@
+{
+  "name": "com.akeit0.ray-tween",
+  "version": "0.1.0",
+  "displayName": "RayTween",
+  "keywords": [
+    "tween"
+  ],
+  "dependencies": {
+    "com.unity.burst": "1.6.0",
+    "com.unity.collections": "1.5.1",
+    "com.unity.mathematics": "1.0.0"
+  },
+  "author": {
+    "name": "Akeit0"
+  },
+  "description": "RayTween"
+}
