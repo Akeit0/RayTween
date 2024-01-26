@@ -4,7 +4,7 @@ using RayTween.Plugins;
 
 namespace RayTween
 {
-    public static class RTween
+    public static partial class RTween
     {
         public static TweenHandle<float, FloatTweenPlugin> DelayedCall(float seconds, Action action)
         {
@@ -143,5 +143,20 @@ namespace RayTween
         // {
         //     return TweenHandle<Vector3,Vector3TweenPlugin>.Create(target1, target2, setter, from, to, duration);
         // }
+       public static TweenFromTo<Vector3,Path3DTweenPlugin> CreatePath3D(float duration) =>
+        new TweenFromTo<Vector3, Path3DTweenPlugin>(Vector3.zero, Vector3.one, duration);
+
+        public static TweenFromTo<Vector3,Path3DTweenPlugin> CreatePath3D(Vector3 offset,Vector3 scale,float duration) =>
+            new TweenFromTo<Vector3, Path3DTweenPlugin>(offset, scale,duration);
+        
+        public static TweenHandle<Vector3,Path3DTweenPlugin> WithPath(this TweenHandle<Vector3,Path3DTweenPlugin> handle,ReadOnlySpan<Vector3> points)
+        {
+            if (handle.IsIdling)
+            {
+                ref  var plugin = ref handle.Data.Plugin;
+                plugin.SetPath(points);
+            }
+            return handle;
+        }
     }
 }

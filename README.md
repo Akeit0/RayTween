@@ -33,7 +33,7 @@ void TMPCharMotionExample()
 ```cs
 async UniTaskVoid Circle(int count)
 {
-    using PreservedTween<Vector3,Path3DTweenPlugin> p = RPath.Create3D(3f).BindToPosition(transform).WithPath(
+   using PreservedTween<Vector3,Path3DTweenPlugin> p = RTween.CreatePath3D(3f).BindToPosition(transform).WithPath(
             Path.AsSpan()).SetOptions(new PathTweenOptions(PathType.CatmullRom, true)).SetEase(Ease.OutSine)
         .SetLoops(3, LoopType.Flip).Preserve();
 
