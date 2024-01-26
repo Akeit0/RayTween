@@ -6,13 +6,13 @@
 3. Enter the following URL:
 
 ```
-https://github.com/Akeit0/RayTween.git?path=/RayTween/Packages
+https://github.com/Akeit0/RayTween.git?path=/RayTween/Packages/RayTween
 ```
 ### manifest.json
 Open `Packages/manifest.json` and add the following in the `dependencies` block:
 
 ```json
-"com.akeit0.com.akeit0.ray-tween": "https://github.com/Akeit0/RayTween.git?path=/RayTween/Packages"
+"com.akeit0.com.akeit0.ray-tween": "https://github.com/Akeit0/RayTween.git?path=/RayTween/Packages/RayTween"
 ```
 ```cs
 void TMPCharMotionExample()
