@@ -24,7 +24,7 @@ void TMPCharMotionExample()
             .SetDelay(i * 0.1f)
             .SetEase(Ease.OutQuad);
 
-        RPunch.Create(Vector3.zero, Vector3.up * 15f, 1f).BindToTMPCharPosition(text, i)
+        RTween.Punch.Create(Vector3.zero, Vector3.up * 15f, 1f).BindToTMPCharPosition(text, i)
             .SetDelay(i * 0.1f)
             .SetEase(Ease.OutQuad);
     }
