@@ -16,7 +16,8 @@ namespace RayTween.Internal
 
     internal static class TweenStorageManager
     {
-        public static void Reset()
+        
+         static TweenStorageManager()
         {
             freeEntry = 0;
             var entrySpan = entries.AsSpan();
@@ -38,8 +39,9 @@ namespace RayTween.Internal
             entries[index].DenseIndex = value;
         }
 
-        internal static void SetData(int index, (int StorageId, int DenseIndex) data)
+        internal static void SetData(int index,int version, (int StorageId, int DenseIndex) data)
         {
+            if(entries[index].Version!=version) throw new InvalidOperationException($"Invalid version {version}!={entries[index].Version}");
             entries[index].StorageId = data.StorageId;
             entries[index].DenseIndex = data.DenseIndex;
         }
@@ -184,7 +186,6 @@ namespace RayTween.Internal
             var version = entry.Version;
             if (version <= 0 || version != handle.Version)
             {
-                Debug.Log("version" + version + " " + handle.Version);
                 return false;
             }
 

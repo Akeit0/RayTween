@@ -175,10 +175,7 @@ namespace RayTween
         where TPlugin : unmanaged, ITweenPlugin<TValue>
     {
         internal static readonly TweenDataBuffer<TValue, TPlugin> Buffer = TweenDataBuffer<TValue, TPlugin>.Instance;
-
-        private static TweenHandle<TValue, TPlugin> BufferedHandle =>
-            new TweenHandle<TValue, TPlugin>(Buffer.Handle.Index, Buffer.Handle.Version);
-
+        
         static TweenHandle()
         {
             TweenDispatcher.OnUpdateAction += Buffer.ScheduleIfMatchTiming;
@@ -192,11 +189,11 @@ namespace RayTween
             Buffer.Schedule();
         }
 
-        public bool IsIdling => this == BufferedHandle;
+        public bool IsIdling => Buffer.HasSameHandle(Index, Version);
 
         bool TryGetBuffer(out TweenDataBuffer<TValue, TPlugin> buffer)
         {
-            buffer = TweenDataBuffer<TValue, TPlugin>.Instance;
+            buffer = Buffer;
             if (buffer.HasSameHandle(Index, Version))
             {
                 return true;

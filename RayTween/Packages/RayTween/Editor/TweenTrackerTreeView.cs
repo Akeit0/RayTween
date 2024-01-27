@@ -119,11 +119,11 @@ namespace RayTween.Editor
                     _ => null
                 };
             }
-#if UNITY_EDITOR
-            if(!EditorApplication.isPlaying)return "EditorUpdate";
-#else
-                scheduler = TweenScheduler.Update;
-#endif
+// #if UNITY_EDITOR
+//             if(!EditorApplication.isPlaying)return "EditorUpdate";
+// #else
+                scheduler ??= TweenScheduler.Update;
+// #endif
            
             return scheduler switch
             {

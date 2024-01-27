@@ -55,11 +55,12 @@ namespace RayTween.Internal
                 Array.Resize(ref dataArray, newLength);
                 Array.Resize(ref callbacksArray, newLength);
             }
+            
 
 #if RAYTWEEN_ENABLE_TWEEN_LOG
             UnityEngine.Debug.Log("[Add] Entry:" + handle.Index + " DenseIndex:" + tail + " Version:" + handle.Version+" EndValue:"+data.EndValue );
 #endif
-            TweenStorageManager.SetData(handle.Index,(StorageId,tail));
+            TweenStorageManager.SetData(handle.Index,handle.Version, (StorageId,tail));
             toEntryIndex[tail] = handle.Index;
             dataArray[tail] = data;
             callbacksArray[tail] = callbacks;
@@ -274,6 +275,16 @@ namespace RayTween.Internal
             }
             dataArray.AsSpan().Clear();
             callbacksArray.AsSpan().Clear();
+           
+            var toEntryIndexSpan = toEntryIndex.AsSpan(0, tail);
+            foreach (var entryIndex in toEntryIndexSpan)
+            {
+                if (entryIndex != null)
+                {
+                    TweenStorageManager.Free((int)entryIndex);
+                }
+            }
+           
             tail = 0;
         }
     }

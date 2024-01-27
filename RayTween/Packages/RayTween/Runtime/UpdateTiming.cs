@@ -10,6 +10,9 @@
         PreLateUpdate = 5,
         PostLateUpdate = 6,
         TimeUpdate = 7,
-        Manual,
+        Manual=8,
+        #if UNITY_EDITOR
+        EditorUpdate = 9,
+        #endif
     }
 }

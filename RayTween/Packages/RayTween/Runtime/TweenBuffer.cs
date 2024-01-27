@@ -1,5 +1,8 @@
 ﻿using RayTween.Internal;
 using System;
+using System.Diagnostics;
+using UnityEngine;
+using Debug = UnityEngine.Debug;
 
 namespace RayTween
 {
@@ -45,26 +48,27 @@ namespace RayTween
     {
         public readonly TweenHandle<TValue, TPlugin> Handle;
         readonly TweenDataBuffer<TValue, TPlugin> buffer;
+
         public PreservedTween(TweenHandle<TValue, TPlugin> handle)
         {
             Handle = handle;
             buffer = TweenDataBuffer<TValue, TPlugin>.CreateCopy();
         }
-        public bool IsPreserved=> buffer.HasSameHandle(Handle.Index, Handle.Version);
-        public void Schedule()
+
+        public bool IsPreserved => buffer.HasSameHandle(Handle.Index, Handle.Version);
+
+        void Schedule()
         {
-            if (IsPreserved)
-            {
-                buffer.Schedule();
-                buffer.Return();
-            }
+            buffer.Schedule();
+            buffer.Return();
         }
 
         public void Dispose()
-        {  if (IsPreserved)
-            Schedule();
+        {
+            if (IsPreserved)
+                Schedule();
         }
-        
+
         public void SetLoops(int loops)
         {
             if (IsPreserved)
@@ -72,109 +76,159 @@ namespace RayTween
                 buffer.SetLoops(loops);
             }
         }
-        public void SetLoops(int loops,LoopType loopType)
+
+        public PreservedTween<TValue, TPlugin> SetLoops(int loops, LoopType loopType)
         {
             if (IsPreserved)
             {
-                buffer.SetLoops(loops,loopType);
+                buffer.SetLoops(loops, loopType);
             }
+
+            return this;
         }
-        public void SetEase(Ease ease)
+
+        public PreservedTween<TValue, TPlugin> SetEase(Ease ease)
         {
             if (IsPreserved)
             {
                 buffer.SetEase(ease);
             }
+
+            return this;
         }
-        public void SetTimeKind(TweenTimeKind timeKind)
+
+        public PreservedTween<TValue, TPlugin> SetTimeKind(TweenTimeKind timeKind)
         {
             if (IsPreserved)
             {
                 buffer.SetTimeKind(timeKind);
             }
+
+            return this;
         }
-        public void From(TValue start)
+
+        public PreservedTween<TValue, TPlugin> From(TValue start)
         {
             if (IsPreserved)
             {
                 buffer.From(start);
             }
+
+            return this;
         }
-        public void From(bool isFrom)
+
+        public PreservedTween<TValue, TPlugin> From(bool isFrom)
         {
             if (IsPreserved)
             {
                 buffer.From(isFrom);
             }
+
+            return this;
         }
-        public void OnComplete(Action action)
+
+        public PreservedTween<TValue, TPlugin> OnComplete(Action action)
         {
             if (IsPreserved)
             {
                 buffer.OnComplete(action);
             }
+
+            return this;
         }
-        public void OnComplete<TTarget>(TTarget target, Action<TTarget> action) where TTarget : class
+
+        public PreservedTween<TValue, TPlugin> OnComplete<TTarget>(TTarget target, Action<TTarget> action)
+            where TTarget : class
         {
             if (IsPreserved)
             {
-                buffer.OnComplete(target,action);
+                buffer.OnComplete(target, action);
             }
+
+            return this;
         }
-        public void OnCancel(Action action)
+
+        public PreservedTween<TValue, TPlugin> OnCancel(Action action)
         {
             if (IsPreserved)
             {
                 buffer.OnCancel(action);
             }
+
+            return this;
         }
-        public void OnCancel<TTarget>(TTarget target, Action<TTarget> action) where TTarget : class
+
+        public PreservedTween<TValue, TPlugin> OnCancel<TTarget>(TTarget target, Action<TTarget> action)
+            where TTarget : class
         {
             if (IsPreserved)
             {
-                buffer.OnCancel(target,action);
+                buffer.OnCancel(target, action);
             }
+
+            return this;
         }
-        public void OnDispose(Action<TweenResult> action)
+
+        public PreservedTween<TValue, TPlugin> OnDispose(Action<TweenResult> action)
         {
             if (IsPreserved)
             {
                 buffer.OnDispose(action);
             }
+
+            return this;
         }
-        public void OnDispose<TTarget>(TTarget target, Action<TTarget, TweenResult> action) where TTarget : class
+
+        public PreservedTween<TValue, TPlugin> OnDispose<TTarget>(TTarget target, Action<TTarget, TweenResult> action)
+            where TTarget : class
         {
             if (IsPreserved)
             {
-                buffer.OnDispose(target,action);
+                buffer.OnDispose(target, action);
             }
+
+            return this;
         }
-        
-        public void SetScheduler(ITweenScheduler scheduler)
+
+        public PreservedTween<TValue, TPlugin> SetScheduler(ITweenScheduler scheduler)
         {
             if (IsPreserved)
             {
                 buffer.SetScheduler(scheduler);
             }
+
+            return this;
         }
-        
-        public void SetDelay(float delay)
+
+        public PreservedTween<TValue, TPlugin> SetDelay(float delay)
         {
             if (IsPreserved)
             {
                 buffer.SetDelay(delay);
             }
+
+            return this;
         }
-        
-        public void SetRelative(bool isRelative)
+
+        public PreservedTween<TValue, TPlugin> SetRelative(bool isRelative)
         {
             if (IsPreserved)
             {
                 buffer.SetRelative(isRelative);
             }
+
+            return this;
         }
-        
-        
+
+        public PreservedTween<TValue, TPlugin> SetLink(GameObject gameObject)
+        {
+            if (IsPreserved)
+            {
+                Handle.SetLink(gameObject);
+            }
+
+            return this;
+        }
     }
 
     internal sealed class TweenDataBuffer<TValue, TPlugin> : TweenDataBuffer where TValue : unmanaged
@@ -197,6 +251,10 @@ namespace RayTween
             {
                 result = new TweenDataBuffer<TValue, TPlugin>();
             }
+#if UNITY_EDITOR
+            result.StackTrace = Instance.StackTrace;
+            result.playModeVersion = Instance.playModeVersion;
+#endif
             result.Scheduler = Instance.Scheduler;
             result.TweenData = Instance.TweenData;
             result.CallbackData = Instance.CallbackData;
@@ -214,6 +272,9 @@ namespace RayTween
 
         public void Init()
         {
+#if UNITY_EDITOR
+            StackTrace = null;
+#endif
             TweenData = default;
             CallbackData = default;
             RelativeMode = default;
@@ -227,10 +288,17 @@ namespace RayTween
             typeId = BufferList.Length;
             BufferList.Add(Instance);
         }
-
+#if UNITY_EDITOR
+        internal StackTrace StackTrace;
+        int playModeVersion;
+#endif
         public void InitFromTo(TValue start, TValue end, float duration,
             RelativeMode relativeMode)
         {
+#if UNITY_EDITOR
+            if (StackTrace == null && TweenTracker.EnableStackTrace) StackTrace = new StackTrace(3, true);
+            playModeVersion = EditorTweenDispatcher.PlayModeVersion;
+#endif
             RelativeMode = relativeMode;
             Scheduler = TweenScheduler.Update;
             ref var tweenData = ref TweenData;
@@ -252,24 +320,6 @@ namespace RayTween
             CallbackData.TargetCount = 0;
         }
 
-        public void InitTo<TTarget>(TTarget target, object setter, TValue end, float duration,
-            RelativeMode relativeMode) where TTarget : class
-        {
-            InitFromTo(default(TValue), end, duration, relativeMode);
-            CallbackData.TargetCount = 1;
-            CallbackData.Target1 = target;
-            CallbackData.UpdateAction = setter;
-        }
-
-        public void InitTo(object target1, object target2, object setter, TValue start, TValue end, float duration,
-            RelativeMode relativeMode)
-        {
-            InitFromTo(start, end, duration, relativeMode);
-            CallbackData.TargetCount = 2;
-            CallbackData.Target1 = target1;
-            CallbackData.Target2 = target2;
-            CallbackData.UpdateAction = setter;
-        }
 
         public void Set((int, int ) handle)
         {
@@ -281,28 +331,48 @@ namespace RayTween
         {
             if (0 <= Handle.Index)
             {
-                var handle = new TweenHandle<TValue, TPlugin>(Handle.Index, Handle.Version);
-                if (TweenTracker.EnableTracking)
+                try
                 {
-                    TweenTracker.AddTracking(this, Scheduler);
-                }
+#if UNITY_EDITOR
+                    if (playModeVersion != EditorTweenDispatcher.PlayModeVersion)
+                    {
+                        Debug.LogWarning("Tween was created before PlayModeStateChanged.");
+                        Handle.Index = -1;
+                        return;
+                    }
 
-                if (IsFrom)
+                    if (TweenTracker.EnableTracking)
+                    {
+                        TweenTracker.AddTracking(this, Scheduler);
+                    }
+#endif
+
+                    if (IsFrom)
+                    {
+                        (TweenData.StartValue, TweenData.EndValue) = (TweenData.EndValue, TweenData.StartValue);
+                    }
+
+                    var relativeModeApplier = TweenData<TValue, TPlugin>.RelativeModeApplier;
+                    if (relativeModeApplier != null)
+                        TweenData.EndValue =
+                            relativeModeApplier(RelativeMode, TweenData.StartValue, TweenData.EndValue);
+                    TweenData.Status = TweenStatus.Scheduled;
+
+                    var handle = new TweenHandle<TValue, TPlugin>(Handle.Index, Handle.Version);
+                    Scheduler.Schedule(handle, ref TweenData, ref CallbackData);
+
+                    StackTrace = null;
+                    Scheduler = null;
+                    TweenData = default;
+                    CallbackData = default;
+                }
+                finally
                 {
-                    (TweenData.StartValue, TweenData.EndValue) = (TweenData.EndValue, TweenData.StartValue);
+                    Handle.Index = -1;
                 }
-
-                var relativeModeApplier = TweenData<TValue, TPlugin>.RelativeModeApplier;
-                if (relativeModeApplier != null)
-                    TweenData.EndValue = relativeModeApplier(RelativeMode, TweenData.StartValue, TweenData.EndValue);
-                TweenData.Status = TweenStatus.Scheduled;
-                Scheduler.Schedule(handle, ref TweenData, ref CallbackData);
-                Scheduler = null;
-                TweenData = default;
-                CallbackData = default;
-                Handle.Index = -1;
             }
         }
+
         public void ScheduleIfMatchTiming(UpdateTiming timing)
         {
             if (Scheduler == null) return;
@@ -314,63 +384,74 @@ namespace RayTween
         {
             TweenData.Loops = loops;
         }
-        public void SetLoops(int loops,LoopType loopType)
+
+        public void SetLoops(int loops, LoopType loopType)
         {
             TweenData.Loops = loops;
             TweenData.LoopType = loopType;
         }
+
         public void SetEase(Ease ease)
         {
             TweenData.Ease = ease;
         }
+
         public void SetTimeKind(TweenTimeKind timeKind)
         {
             TweenData.TimeKind = timeKind;
         }
+
         public void From(TValue start)
         {
             TweenData.StartValue = start;
         }
+
         public void From(bool isFrom)
         {
             IsFrom = isFrom;
         }
+
         public void OnComplete(Action action)
         {
             CallbackData.AppendOnComplete(action);
         }
+
         public void OnComplete<TTarget>(TTarget target, Action<TTarget> action) where TTarget : class
         {
             CallbackData.AppendOnComplete(target, action);
         }
+
         public void OnCancel(Action action)
         {
             CallbackData.AppendOnCancel(action);
         }
+
         public void OnCancel<TTarget>(TTarget target, Action<TTarget> action) where TTarget : class
         {
             CallbackData.AppendOnCancel(target, action);
         }
+
         public void OnDispose(Action<TweenResult> action)
         {
             CallbackData.Append(action);
         }
+
         public void OnDispose<TTarget>(TTarget target, Action<TTarget, TweenResult> action) where TTarget : class
         {
             CallbackData.Append(target, action);
         }
-        
+
         public void SetScheduler(ITweenScheduler scheduler)
         {
             Scheduler = scheduler;
         }
-        
+
         public void SetDelay(float delay)
         {
             TweenData.Delay = delay;
         }
 
-        
+
         public void SetRelative(bool isRelative)
         {
             switch (RelativeMode, isRelative)
@@ -398,5 +479,4 @@ namespace RayTween
             }
         }
     }
-
 }

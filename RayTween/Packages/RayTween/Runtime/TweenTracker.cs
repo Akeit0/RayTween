@@ -15,17 +15,18 @@ namespace RayTween
         public static IReadOnlyList<TrackingState> Items => trackings;
         static readonly List<TrackingState> trackings = new(16);
 
-        internal static void AddTracking<TValue, TPlugin>(TweenDataBuffer<TValue, TPlugin> buffer, ITweenScheduler scheduler, int skipFrames = 3)where TValue : unmanaged
+        internal static void AddTracking<TValue, TPlugin>(TweenDataBuffer<TValue, TPlugin> buffer, ITweenScheduler scheduler)where TValue : unmanaged
          
             where TPlugin : unmanaged, ITweenPlugin<TValue>
         {
             var state = TrackingState.Create();
             state.ValueType = typeof(TValue);
             state.PluginType = typeof(TPlugin);
+            
             state.Scheduler = scheduler;
             state.CreationTime = DateTime.UtcNow;
 
-            if (EnableStackTrace) state.StackTrace = new StackTrace(skipFrames, true);
+            if (EnableStackTrace) state.StackTrace = buffer.StackTrace;
             buffer.CallbackData.Append(state,static (target,result)=>target.OnTweenDispose(result));
             trackings.Add(state);
         }

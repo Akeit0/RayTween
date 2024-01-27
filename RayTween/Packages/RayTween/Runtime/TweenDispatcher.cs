@@ -143,7 +143,6 @@ namespace RayTween
         static void Init()
         {
             Clear();
-            TweenStorageManager.Reset();
         }
 
         /// <summary>
@@ -324,7 +323,15 @@ namespace RayTween
 
             AppDomain.CurrentDomain.DomainUnload += OnDomainUnload;
         }
-
+      
+        // static void ClearEditorUpdates()
+        // {
+        //     var span = updateRunners.AsSpan();
+        //     foreach (var t in span)
+        //     {
+        //         t.Reset();
+        //     }
+        // }
         static EditorTweenDispatcher()
         {
             Init();
@@ -335,13 +342,15 @@ namespace RayTween
             EditorApplication.update -= Update;
             EditorApplication.playModeStateChanged -= OnPlayModeStateChanged;
         }
-
+        public static int  PlayModeVersion { get; private set; }
         static void OnPlayModeStateChanged(PlayModeStateChange s)
         {
-            if (s == PlayModeStateChange.ExitingPlayMode)
+            PlayModeVersion++;
+            if (s is PlayModeStateChange.ExitingPlayMode )
             {
+                
                 TweenDispatcher.Clear();
-                TweenStorageManager.Reset();
+                //TweenStorageManager.Reset();
                 //  Debug.Log("Exit PlayMode");
             }
         }
