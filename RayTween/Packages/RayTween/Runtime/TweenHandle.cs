@@ -460,35 +460,5 @@ namespace RayTween
         {
             return new PreservedTween<TValue, TPlugin>(this);
         }
-        // public  TweenHandle<TValue,TOptionsTarget,TPluginTarget> Convert<TOptionsTarget,TPluginTarget>()where TOptionsTarget : unmanaged, ITweenOptions
-        //     where TPluginTarget : unmanaged, ITweenPlugin<TValue, TOptionsTarget>
-        // {
-        //     if (IsLeft)
-        //     {
-        //         throw new InvalidOperationException();
-        //     }
-        //     
-        //     Buffer.Handle.Index = -1;
-        //     TweenHandle<TValue, TOptionsTarget, TPluginTarget>.ScheduleBuffer();
-        //     var handle= new TweenHandle<TValue, TOptionsTarget, TPluginTarget>()
-        //         { Index = Index, Version = Version };
-        //     TweenHandle<TValue, TOptionsTarget, TPluginTarget>.Buffer.Handle = (Index, Version);
-        //     var targetBuffer = TweenHandle<TValue, TOptionsTarget, TPluginTarget>.Buffer;
-        //     targetBuffer.CallbackData= Buffer.CallbackData;
-        //     targetBuffer.Scheduler = Buffer.Scheduler;
-        //     targetBuffer.TweenData.StartValue = Buffer.TweenData.StartValue ;
-        //     targetBuffer.TweenData.EndValue = Buffer.TweenData.EndValue ;
-        //     targetBuffer.TweenData.Duration = Buffer.TweenData.Duration ;
-        //     targetBuffer.TweenData.Ease = Buffer.TweenData.Ease ;
-        //     targetBuffer.TweenData.TimeKind = Buffer.TweenData.TimeKind ;
-        //     targetBuffer.TweenData.Delay = Buffer.TweenData.Delay ;
-        //     targetBuffer.TweenData.Loops = Buffer.TweenData.Loops ;
-        //     targetBuffer.TweenData.DelayType = Buffer.TweenData.DelayType ;
-        //     targetBuffer.TweenData.LoopType = Buffer.TweenData.LoopType ;
-        //     targetBuffer.TweenData.Options = default ;
-        //     return handle;
-        //
-        //
-        // }
     }
 }

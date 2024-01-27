@@ -11,7 +11,6 @@ namespace RayTween
     /// A job that updates the status of the tween data and outputs the current value.
     /// </summary>
     /// <typeparam name="TValue">The type of value to animate</typeparam>
-    /// <typeparam name="TOptions">The type of special parameters given to the tween data</typeparam>
     /// <typeparam name="TPlugin">The type of Plugin that support value animation</typeparam>
     [BurstCompile]
     public unsafe struct TweenUpdateJob<TValue,TPlugin> : IJobParallelFor

@@ -334,9 +334,9 @@ namespace RayTween
                 try
                 {
 #if UNITY_EDITOR
-                    if (playModeVersion != EditorTweenDispatcher.PlayModeVersion)
+                    if (Scheduler.UpdateTiming!=UpdateTiming.EditorUpdate&& playModeVersion != EditorTweenDispatcher.PlayModeVersion)
                     {
-                        Debug.LogWarning("Tween was created before PlayModeStateChanged.");
+                        Debug.LogWarning($"Tween was created before PlayModeStateChanged. {playModeVersion} -> {EditorTweenDispatcher.PlayModeVersion}");
                         Handle.Index = -1;
                         return;
                     }

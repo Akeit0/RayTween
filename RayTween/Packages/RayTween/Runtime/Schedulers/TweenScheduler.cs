@@ -16,11 +16,6 @@ namespace RayTween
             return Schedulers.Length - 1;
         }
         
-        // internal static TweenHandle Schedule<TValue,TOptions,TPlugin>(TweenHandle<TValue,TOptions,TPlugin> scheduler)where TOptions :  ITweenOptions
-        // {
-        //    
-        // }
-        
         
         /// <summary>
         /// Scheduler that updates tween at Initialization.

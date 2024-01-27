@@ -10,7 +10,6 @@ namespace RayTween
         /// Schedule the tween.
         /// </summary>
         /// <typeparam name="TValue">The type of value to animate</typeparam>
-        /// <typeparam name="TOptions">The type of special parameters given to the tween data</typeparam>
         /// <typeparam name="TPlugin">The type of Plugin that support value animation</typeparam>
         /// <param name="handle"></param>
         /// <param name="data">Tween data</param>

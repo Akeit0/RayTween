@@ -319,6 +319,7 @@ namespace RayTween
             if (isInitialized) return;
             isInitialized = true;
             EditorApplication.update += Update;
+            PlayModeVersion = 0;
             EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
 
             AppDomain.CurrentDomain.DomainUnload += OnDomainUnload;
@@ -359,10 +360,15 @@ namespace RayTween
         {
             if (!EditorApplication.isPlaying)
             {
-                for (int i = 0; i < (int)UpdateTiming.Manual; i++)
+                for (int i = 0; i < (int)(UpdateTiming.EditorUpdate+1); i++)
                 {
-                    TweenDispatcher.OnUpdateAction?.Invoke((UpdateTiming)i);
+                    if(i!= (int)UpdateTiming.Manual)
+                        TweenDispatcher.OnUpdateAction?.Invoke((UpdateTiming)i);
                 }
+            }
+            else
+            {
+                TweenDispatcher.OnUpdateAction?.Invoke(UpdateTiming.EditorUpdate);
             }
 
             var span = updateRunners.AsSpan();

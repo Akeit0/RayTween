@@ -37,7 +37,8 @@ namespace Scenes
         {
             RTween.Create("", Text, 3f).Bind(text, (text, x) =>
             {
-                var v = x.AsSpan().ToString();
+                var v = x.ToString();
+                Debug.Log(v);
                 text.text = v;
             }).SetOptions(
                 new StringOptions()
@@ -46,22 +47,23 @@ namespace Scenes
                     ScrambleMode = ScrambleMode.Custom,
                     RichTextEnabled = true,
                     CustomScrambleChars = "RayTween",
-                });
+                }).SetScheduler(RayTween.Editor.EditorTweenScheduler.Update);
         }
 
         [Button]
         void TMPCharMotionExample()
         {
+          
             // Get the number of characters from TMP_Text.textInfo.characterCount
             for (int i = 0; i < text.textInfo.characterCount; i++)
             {
                 RTween.Create(Color.white, Color.red, 1f).BindToTMPCharColor(text, i)
-                    .SetDelay(i * 0.1f)
-                    .SetEase(Ease.OutQuad);
+                    .SetDelay(i * 0.1f);
+                   
 
                 RTween.Punch.Create(Vector3.zero, Vector3.up * 15f, 1f).BindToTMPCharPosition(text, i)
                     .SetDelay(i * 0.1f)
-                    .SetEase(Ease.OutQuad);
+                    .SetEase(Ease.OutQuad) .SetEase(Ease.OutQuad);
             }
         }
 

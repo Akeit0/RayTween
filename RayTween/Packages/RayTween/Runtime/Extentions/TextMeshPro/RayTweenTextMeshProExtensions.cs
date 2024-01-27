@@ -1,8 +1,6 @@
 #if RAYTWEEN_SUPPORT_TMP
 using System.Buffers;
-using RayTween.Plugins;
 using UnityEngine;
-using Unity.Collections;
 using TMPro;
 using RayTween.Internal;
 using Unity.Collections.LowLevel.Unsafe;
@@ -20,7 +18,6 @@ namespace RayTween.Extensions
         /// <summary>
         /// Create a tween data and bind it to TMP_Text.fontSize
         /// </summary>
-        /// <typeparam name="TOptions">The type of special parameters given to the tween data</typeparam>
         /// <typeparam name="TPlugin">The type of Plugin that support value animation</typeparam>
         /// <param name="handle">This handle</param>
         /// <param name="text">Target TMP_Text</param>
@@ -36,7 +33,6 @@ namespace RayTween.Extensions
         /// <summary>
         /// Create a tween data and bind it to TMP_Text.maxVisibleCharacters
         /// </summary>
-        /// <typeparam name="TOptions">The type of special parameters given to the tween data</typeparam>
         /// <typeparam name="TPlugin">The type of Plugin that support value animation</typeparam>
         /// <param name="handle">This handle</param>
         /// <param name="text">Target TMP_Text</param>
@@ -53,7 +49,6 @@ namespace RayTween.Extensions
         /// <summary>
         /// Create a tween data and bind it to TMP_Text.maxVisibleLines
         /// </summary>
-        /// <typeparam name="TOptions">The type of special parameters given to the tween data</typeparam>
         /// <typeparam name="TPlugin">The type of Plugin that support value animation</typeparam>
         /// <param name="handle">This handle</param>
         /// <param name="text">Target TMP_Text</param>
@@ -69,7 +64,6 @@ namespace RayTween.Extensions
         /// <summary>
         /// Create a tween data and bind it to TMP_Text.maxVisibleWords
         /// </summary>
-        /// <typeparam name="TOptions">The type of special parameters given to the tween data</typeparam>
         /// <typeparam name="TPlugin">The type of Plugin that support value animation</typeparam>
         /// <param name="handle">This handle</param>
         /// <param name="text">Target TMP_Text</param>
@@ -85,7 +79,6 @@ namespace RayTween.Extensions
         /// <summary>
         /// Create a tween data and bind it to TMP_Text.color
         /// </summary>
-        /// <typeparam name="TOptions">The type of special parameters given to the tween data</typeparam>
         /// <typeparam name="TPlugin">The type of Plugin that support value animation</typeparam>
         /// <param name="handle">This handle</param>
         /// <param name="text">Target TMP_Text</param>
@@ -101,7 +94,6 @@ namespace RayTween.Extensions
         /// <summary>
         /// Create a tween data and bind it to TMP_Text.color.r
         /// </summary>
-        /// <typeparam name="TOptions">The type of special parameters given to the tween data</typeparam>
         /// <typeparam name="TPlugin">The type of Plugin that support value animation</typeparam>
         /// <param name="handle">This handle</param>
         /// <param name="text">Target TMP_Text</param>
@@ -122,7 +114,6 @@ namespace RayTween.Extensions
         /// <summary>
         /// Create a tween data and bind it to TMP_Text.color.g
         /// </summary>
-        /// <typeparam name="TOptions">The type of special parameters given to the tween data</typeparam>
         /// <typeparam name="TPlugin">The type of Plugin that support value animation</typeparam>
         /// <param name="handle">This handle</param>
         /// <param name="text">Target TMP_Text</param>
@@ -143,7 +134,6 @@ namespace RayTween.Extensions
         /// <summary>
         /// Create a tween data and bind it to TMP_Text.color.b
         /// </summary>
-        /// <typeparam name="TOptions">The type of special parameters given to the tween data</typeparam>
         /// <typeparam name="TPlugin">The type of Plugin that support value animation</typeparam>
         /// <param name="handle">This handle</param>
         /// <param name="text">Target TMP_Text</param>
@@ -164,7 +154,6 @@ namespace RayTween.Extensions
         /// <summary>
         /// Create a tween data and bind it to TMP_Text.color.a
         /// </summary>
-        /// <typeparam name="TOptions">The type of special parameters given to the tween data</typeparam>
         /// <typeparam name="TPlugin">The type of Plugin that support value animation</typeparam>
         /// <param name="handle">This handle</param>
         /// <param name="text">Target TMP_Text</param>
@@ -192,20 +181,20 @@ namespace RayTween.Extensions
         /// <param name="handle">This handle</param>
         /// <param name="text">Target TMP_Text</param>
         /// <returns>Handle of the created tween data.</returns>
-        public  static unsafe TweenHandle<UnsafeString,TPlugin> BindToText<TPlugin>(this TweenFromTo<UnsafeString, TPlugin> handle, TMP_Text text)
-           
+        public static unsafe TweenHandle<UnsafeString, TPlugin> BindToText<TPlugin>(
+            this TweenFromTo<UnsafeString, TPlugin> handle, TMP_Text text)
             where TPlugin : unmanaged, ITweenPlugin<UnsafeString>
         {
             Error.IsNull(text);
             return handle.Bind(text, static (target, x) =>
-            { 
-             
+            {
                 var length = x.Length;
                 var buffer = ArrayPool<char>.Shared.Rent(length);
                 fixed (char* c = buffer)
                 {
-                    UnsafeUtility.MemCpy(c,x.Value.Ptr, length * 2);
+                    UnsafeUtility.MemCpy(c, x.Value.Ptr, length * 2);
                 }
+
                 target.SetText(buffer, 0, length);
                 ArrayPool<char>.Shared.Return(buffer);
             });
@@ -217,7 +206,6 @@ namespace RayTween.Extensions
         /// <remarks>
         /// Note: This extension method uses TMP_Text.SetText() to achieve zero allocation, so it is recommended to use this method when binding to text.
         /// </remarks>
-        /// <typeparam name="TOptions">The type of special parameters given to the tween data</typeparam>
         /// <typeparam name="TPlugin">The type of Plugin that support value animation</typeparam>
         /// <param name="handle">This handle</param>
         /// <returns>Handle of the created tween data.</returns>
@@ -239,7 +227,6 @@ namespace RayTween.Extensions
         /// <summary>
         /// Create a tween data and bind it to TMP_Text.text.
         /// </summary>
-        /// <typeparam name="TOptions">The type of special parameters given to the tween data</typeparam>
         /// <typeparam name="TPlugin">The type of Plugin that support value animation</typeparam>
         /// <param name="handle">This handle</param>
         /// <param name="text">Target TMP_Text</param>
@@ -264,7 +251,6 @@ namespace RayTween.Extensions
         /// <summary>
         /// Create a tween data and bind it to TMP_Text.text.
         /// </summary>
-        /// <typeparam name="TOptions">The type of special parameters given to the tween data</typeparam>
         /// <typeparam name="TPlugin">The type of Plugin that support value animation</typeparam>
         /// <param name="handle">This handle</param>
         /// <param name="text">Target TMP_Text</param>
@@ -291,7 +277,6 @@ namespace RayTween.Extensions
         /// <remarks>
         /// Note: This extension method uses TMP_Text.SetText() to achieve zero allocation, so it is recommended to use this method when binding to text.
         /// </remarks>
-        /// <typeparam name="TOptions">The type of special parameters given to the tween data</typeparam>
         /// <typeparam name="TPlugin">The type of Plugin that support value animation</typeparam>
         /// <param name="handle">This handle</param>
         /// <returns>Handle of the created tween data.</returns>
@@ -314,7 +299,6 @@ namespace RayTween.Extensions
         /// <summary>
         /// Create a tween data and bind it to TMP_Text.text.
         /// </summary>
-        /// <typeparam name="TOptions">The type of special parameters given to the tween data</typeparam>
         /// <typeparam name="TPlugin">The type of Plugin that support value animation</typeparam>
         /// <param name="handle">This handle</param>
         /// <param name="text">Target TMP_Text</param>
@@ -339,7 +323,6 @@ namespace RayTween.Extensions
         /// <summary>
         /// Create tween data and bind it to the character color.
         /// </summary>
-        /// <typeparam name="TOptions">The type of special parameters given to the tween data</typeparam>
         /// <typeparam name="TPlugin">The type of Plugin that support value animation</typeparam>
         /// <param name="handle">This handle</param>
         /// <param name="text">Target TMP_Text</param>
@@ -356,7 +339,6 @@ namespace RayTween.Extensions
         /// <summary>
         /// Create tween data and bind it to the character color.r.
         /// </summary>
-        /// <typeparam name="TOptions">The type of special parameters given to the tween data</typeparam>
         /// <typeparam name="TPlugin">The type of Plugin that support value animation</typeparam>
         /// <param name="handle">This handle</param>
         /// <param name="text">Target TMP_Text</param>
@@ -373,7 +355,6 @@ namespace RayTween.Extensions
         /// <summary>
         /// Create tween data and bind it to the character color.g.
         /// </summary>
-        /// <typeparam name="TOptions">The type of special parameters given to the tween data</typeparam>
         /// <typeparam name="TPlugin">The type of Plugin that support value animation</typeparam>
         /// <param name="handle">This handle</param>
         /// <param name="text">Target TMP_Text</param>
@@ -391,7 +372,6 @@ namespace RayTween.Extensions
         /// <summary>
         /// Create tween data and bind it to the character color.b.
         /// </summary>
-        /// <typeparam name="TOptions">The type of special parameters given to the tween data</typeparam>
         /// <typeparam name="TPlugin">The type of Plugin that support value animation</typeparam>
         /// <param name="handle">This handle</param>
         /// <param name="text">Target TMP_Text</param>
@@ -409,7 +389,6 @@ namespace RayTween.Extensions
         /// <summary>
         /// Create tween data and bind it to the character color.a.
         /// </summary>
-        /// <typeparam name="TOptions">The type of special parameters given to the tween data</typeparam>
         /// <typeparam name="TPlugin">The type of Plugin that support value animation</typeparam>
         /// <param name="handle">This handle</param>
         /// <param name="text">Target TMP_Text</param>
@@ -427,7 +406,6 @@ namespace RayTween.Extensions
         /// <summary>
         /// Create tween data and bind it to the character position.
         /// </summary>
-        /// <typeparam name="TOptions">The type of special parameters given to the tween data</typeparam>
         /// <typeparam name="TPlugin">The type of Plugin that support value animation</typeparam>
         /// <param name="handle">This handle</param>
         /// <param name="text">Target TMP_Text</param>
@@ -441,9 +419,9 @@ namespace RayTween.Extensions
             return handle.Bind(text, ReadOnlyIntBox.Create(charIndex),
                 static (target, box, x) => { TextMeshProHelper.SetCharPosition(target, box.Value, x); });
         }
+
         /// Create tween data and bind it to the character position.
         /// </summary>
-        /// <typeparam name="TOptions">The type of special parameters given to the tween data</typeparam>
         /// <typeparam name="TPlugin">The type of Plugin that support value animation</typeparam>
         /// <param name="tweenTo">This handle</param>
         /// <param name="text">Target TMP_Text</param>
@@ -453,12 +431,12 @@ namespace RayTween.Extensions
             this TweenTo<Vector3, TPlugin> tweenTo, TMP_Text text, int charIndex)
             where TPlugin : unmanaged, ITweenPlugin<Vector3>
         {
-           return new TweenFromTo<Vector3, TPlugin>(default,tweenTo).BindToTMPCharPosition(text,charIndex);
+            return new TweenFromTo<Vector3, TPlugin>(default, tweenTo).BindToTMPCharPosition(text, charIndex);
         }
+
         /// <summary>
         /// Create tween data and bind it to the character rotation.
         /// </summary>
-        /// <typeparam name="TOptions">The type of special parameters given to the tween data</typeparam>
         /// <typeparam name="TPlugin">The type of Plugin that support value animation</typeparam>
         /// <param name="handle">This handle</param>
         /// <param name="text">Target TMP_Text</param>
@@ -476,7 +454,6 @@ namespace RayTween.Extensions
         /// <summary>
         /// Create tween data and bind it to the character rotation (using euler angles).
         /// </summary>
-        /// <typeparam name="TOptions">The type of special parameters given to the tween data</typeparam>
         /// <typeparam name="TPlugin">The type of Plugin that support value animation</typeparam>
         /// <param name="handle">This handle</param>
         /// <param name="text">Target TMP_Text</param>
@@ -497,7 +474,6 @@ namespace RayTween.Extensions
         /// <summary>
         /// Create tween data and bind it to the character scale.
         /// </summary>
-        /// <typeparam name="TOptions">The type of special parameters given to the tween data</typeparam>
         /// <typeparam name="TPlugin">The type of Plugin that support value animation</typeparam>
         /// <param name="handle">This handle</param>
         /// <param name="text">Target TMP_Text</param>
@@ -509,7 +485,8 @@ namespace RayTween.Extensions
         {
             Error.IsNull(text);
             return handle.Bind(text, ReadOnlyIntBox.Create(charIndex),
-                static (target, box, x) => { TextMeshProHelper.SetCharScale(target, box.Value, x); },RelativeMode.AbsoluteScale);
+                static (target, box, x) => { TextMeshProHelper.SetCharScale(target, box.Value, x); },
+                RelativeMode.AbsoluteScale);
         }
     }
 }

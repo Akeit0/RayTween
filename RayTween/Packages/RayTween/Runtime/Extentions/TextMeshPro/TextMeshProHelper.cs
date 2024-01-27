@@ -1,5 +1,4 @@
 #if RAYTWEEN_SUPPORT_TMP
-using System;
 using UnityEngine;
 using TMPro;
 
