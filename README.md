@@ -69,3 +69,8 @@ async UniTaskVoid Circle(int count)
     }
 }
 ```
+
+# License
+MIT License
+https://github.com/AnnulusGames/LitMotion/blob/main/LICENSE
+https://github.com/AnnulusGames/MagicTween/blob/main/LICENSE
