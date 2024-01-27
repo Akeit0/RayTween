@@ -284,7 +284,7 @@ namespace RayTween
                 var handle = new TweenHandle<TValue, TPlugin>(Handle.Index, Handle.Version);
                 if (TweenTracker.EnableTracking)
                 {
-                    TweenTracker.AddTracking(handle, Scheduler);
+                    TweenTracker.AddTracking(this, Scheduler);
                 }
 
                 if (IsFrom)
