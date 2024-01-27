@@ -17,10 +17,9 @@ namespace RayTween
             GetOrAddComponent  <TweenHandleLinker>(component.gameObject).Register(handle.AsNoType());
             return handle;
         }
-        private static TComponent GetOrAddComponent<TComponent>(GameObject target) where TComponent : Component
+        static TComponent GetOrAddComponent<TComponent>(GameObject target) where TComponent : Component
         {
-            TComponent component;
-            if (!target.TryGetComponent<TComponent>(out component))
+            if (!target.TryGetComponent<TComponent>(out var component))
                 component = target.AddComponent<TComponent>();
             return component;
         }

@@ -28,7 +28,7 @@ namespace RayTween.Plugins
         }
     }
 
-    public unsafe struct Path3DUnsafeOptions
+    internal unsafe struct Path3DUnsafeOptions
     {
         public Vector3* Points;
         public int Length;
@@ -38,7 +38,7 @@ namespace RayTween.Plugins
 
     public unsafe struct Path3DTweenPlugin : ITweenPlugin<Vector3, PathTweenOptions>
     {
-        public Path3DUnsafeOptions Options;
+        internal Path3DUnsafeOptions Options;
 
         public Vector3 Evaluate(ref Vector3 offset, ref Vector3 scale, float progress)
         {
@@ -92,8 +92,8 @@ namespace RayTween.Plugins
         public void Init()
         {
         }
-
-        public void Dispose()
+        public bool HasDisposeImplementation => true;
+        public void Dispose(ref Vector3 start, ref Vector3 end)
         {
             UnsafeUtility.Free(Options.Points, Allocator.Persistent);
         }
