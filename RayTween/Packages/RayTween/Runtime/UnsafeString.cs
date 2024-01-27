@@ -5,9 +5,9 @@ using Unity.Collections.LowLevel.Unsafe;
 namespace RayTween
 {
     
-        public   struct UnsafeString: IDisposable
+        public   struct UnsafeString
         {
-            public UnsafeList<ushort> Value;
+            internal UnsafeList<ushort> Value;
             public int Length => Value.Length;
             public bool IsCreated => Value.IsCreated;
             
@@ -15,7 +15,7 @@ namespace RayTween
             {
                 return new Span<char>((char*)Value.Ptr,Value.Length);
             }
-            public UnsafeString(string value,Allocator allocator=Allocator.Persistent)
+            internal UnsafeString(string value,Allocator allocator=Allocator.Persistent)
             {
                 if (string.IsNullOrEmpty(value))
                 {
@@ -26,7 +26,7 @@ namespace RayTween
                 Value.Length = value.Length;
                 value.AsSpan().CopyTo(AsSpan());
             }
-            public void Set(string value,Allocator allocator=Allocator.Persistent)
+            internal void Set(string value,Allocator allocator=Allocator.Persistent)
             {
                 if (string.IsNullOrEmpty(value))
                 {
@@ -44,7 +44,7 @@ namespace RayTween
                 Value.Length = value.Length;
                 value.AsSpan().CopyTo(AsSpan());
             }
-            public void Dispose()
+            internal void Dispose()
             {
                 // if (Value.IsCreated)
                 // {
@@ -52,6 +52,11 @@ namespace RayTween
                 // }
                 Value.Dispose();
                 
+            }
+
+            public override string ToString()
+            {
+                return AsSpan().ToString();
             }
         }
     

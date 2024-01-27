@@ -84,13 +84,13 @@ namespace RayTween.Internal
             switch (TargetCount)
             {
                 case 0:
-                    UnsafeUtility.As<object, Action<TValue>>(ref UpdateAction).Invoke(value);
+                    UnsafeUtility.As<object, Action<TValue>>(ref UpdateAction)(value);
                     break;
                 case 1:
-                    UnsafeUtility.As<object, Action<object,TValue>>(ref UpdateAction).Invoke(Target1,value );
+                    UnsafeUtility.As<object, Action<object,TValue>>(ref UpdateAction)(Target1,value );
                     break;
                 case 2:
-                    UnsafeUtility.As<object, Action< object, object,TValue>>(ref UpdateAction).Invoke( Target1, Target2,value);
+                    UnsafeUtility.As<object, Action< object, object,TValue>>(ref UpdateAction)( Target1, Target2,value);
                     break;
             }
         }

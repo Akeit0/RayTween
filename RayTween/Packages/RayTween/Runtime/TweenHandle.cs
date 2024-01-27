@@ -6,80 +6,104 @@ using RayTween.Internal;
 
 namespace RayTween
 {
-    
-    public struct TweenFromTo<TValue,TPlugin> 
+    public struct TweenFromTo<TValue, TPlugin>
     {
         public TValue From;
         public TValue To;
         public float Duration;
+
         public TweenFromTo(TValue from, TValue to, float duration)
         {
             From = from;
             To = to;
             Duration = duration;
         }
-        public TweenFromTo(TValue from, TweenTo<TValue,TPlugin> to)
+
+        public TweenFromTo(TValue from, TweenTo<TValue, TPlugin> to)
         {
             From = from;
             To = to.To;
             Duration = to.Duration;
         }
     }
+
     // ReSharper disable once UnusedTypeParameter
-    public struct TweenTo<TValue,TPlugin> 
+    public struct TweenTo<TValue, TPlugin>
     {
         public TValue To;
         public float Duration;
-        public TweenTo( TValue to, float duration)
+
+        public TweenTo(TValue to, float duration)
         {
             To = to;
             Duration = duration;
         }
     }
+
     public static class FromToExtensions
     {
-        public static TweenHandle<UnsafeString, StringTweenPlugin> Bind (in this TweenFromTo<string, StringTweenPlugin> tweenFromTo,Action<UnsafeString> action)
+        public static TweenHandle<UnsafeString, StringTweenPlugin> Bind(
+            in this TweenFromTo<string, StringTweenPlugin> tweenFromTo, Action<UnsafeString> action)
         {
-            return TweenHandle<UnsafeString, StringTweenPlugin>.Create(action,new UnsafeString(tweenFromTo.From), new UnsafeString(tweenFromTo.To), tweenFromTo.Duration);
+            return TweenHandle<UnsafeString, StringTweenPlugin>.Create(action, new UnsafeString(tweenFromTo.From),
+                new UnsafeString(tweenFromTo.To), tweenFromTo.Duration);
         }
-        public static TweenHandle<UnsafeString, StringTweenPlugin> Bind<TTarget> (in this TweenFromTo<string, StringTweenPlugin> tweenFromTo,TTarget target,Action<TTarget,UnsafeString> action)where TTarget : class
+
+        public static TweenHandle<UnsafeString, StringTweenPlugin> Bind<TTarget>(
+            in this TweenFromTo<string, StringTweenPlugin> tweenFromTo, TTarget target,
+            Action<TTarget, UnsafeString> action) where TTarget : class
         {
-            return TweenHandle<UnsafeString, StringTweenPlugin>.Create(target,action,new UnsafeString(tweenFromTo.From), new UnsafeString(tweenFromTo.To), tweenFromTo.Duration);
+            return TweenHandle<UnsafeString, StringTweenPlugin>.Create(target, action,
+                new UnsafeString(tweenFromTo.From), new UnsafeString(tweenFromTo.To), tweenFromTo.Duration);
         }
-        
-        public static TweenHandle<TValue, TPlugin> Bind<TValue,TPlugin>(in this TweenFromTo<TValue, TPlugin> tweenFromTo,Action<TValue> action,RelativeMode relativeMode=RelativeMode.AbsoluteValue)where TValue : unmanaged
+
+        public static TweenHandle<TValue, TPlugin> Bind<TValue, TPlugin>(
+            in this TweenFromTo<TValue, TPlugin> tweenFromTo, Action<TValue> action,
+            RelativeMode relativeMode = RelativeMode.AbsoluteValue) where TValue : unmanaged
             where TPlugin : unmanaged, ITweenPlugin<TValue>
         {
-            return TweenHandle<TValue, TPlugin>.Create(action,tweenFromTo.From, tweenFromTo.To, tweenFromTo.Duration,relativeMode);
+            return TweenHandle<TValue, TPlugin>.Create(action, tweenFromTo.From, tweenFromTo.To, tweenFromTo.Duration,
+                relativeMode);
         }
-        
-        public static TweenHandle<TValue, TPlugin> Bind<TValue,TPlugin, TTarget>(in this TweenFromTo<TValue, TPlugin> tweenFromTo,TTarget target, Action<TTarget, TValue> action,RelativeMode relativeMode=RelativeMode.AbsoluteValue)where TValue : unmanaged
-            where TPlugin : unmanaged, ITweenPlugin<TValue> where TTarget : class
+
+        public static TweenHandle<TValue, TPlugin> Bind<TValue, TPlugin, TTarget>(
+            in this TweenFromTo<TValue, TPlugin> tweenFromTo, TTarget target, Action<TTarget, TValue> action,
+            RelativeMode relativeMode = RelativeMode.AbsoluteValue) where TValue : unmanaged
+            where TPlugin : unmanaged, ITweenPlugin<TValue>
+            where TTarget : class
         {
-            return TweenHandle<TValue, TPlugin>.Create(target,action,tweenFromTo.From, tweenFromTo.To, tweenFromTo.Duration,relativeMode);
+            return TweenHandle<TValue, TPlugin>.Create(target, action, tweenFromTo.From, tweenFromTo.To,
+                tweenFromTo.Duration, relativeMode);
         }
-        public static TweenHandle<TValue, TPlugin> Bind<TValue,TPlugin, TTarget1,TTarget2>(in this TweenFromTo<TValue, TPlugin> tweenFromTo,TTarget1 target1,TTarget2 target2 ,Action<TTarget1,TTarget2, TValue> action,RelativeMode relativeMode=RelativeMode.AbsoluteValue)where TValue : unmanaged
-            where TPlugin : unmanaged, ITweenPlugin<TValue> where TTarget1 : class where TTarget2 : class
+
+        public static TweenHandle<TValue, TPlugin> Bind<TValue, TPlugin, TTarget1, TTarget2>(
+            in this TweenFromTo<TValue, TPlugin> tweenFromTo, TTarget1 target1, TTarget2 target2,
+            Action<TTarget1, TTarget2, TValue> action, RelativeMode relativeMode = RelativeMode.AbsoluteValue)
+            where TValue : unmanaged
+            where TPlugin : unmanaged, ITweenPlugin<TValue>
+            where TTarget1 : class
+            where TTarget2 : class
         {
-            return TweenHandle<TValue, TPlugin>.Create(target1,target2,action,tweenFromTo.From, tweenFromTo.To, tweenFromTo.Duration,relativeMode);
+            return TweenHandle<TValue, TPlugin>.Create(target1, target2, action, tweenFromTo.From, tweenFromTo.To,
+                tweenFromTo.Duration, relativeMode);
         }
-        
-        
-        public static TweenHandle<TValue, TPlugin> NoBind<TValue,TPlugin>(in this TweenFromTo<TValue, TPlugin> tweenFromTo)where TValue : unmanaged
-            where TPlugin : unmanaged, ITweenPlugin<TValue> 
+
+
+        public static TweenHandle<TValue, TPlugin> BindNothing<TValue, TPlugin>(
+            in this TweenFromTo<TValue, TPlugin> tweenFromTo) where TValue : unmanaged
+            where TPlugin : unmanaged, ITweenPlugin<TValue>
         {
             return TweenHandle<TValue, TPlugin>.Create(tweenFromTo.From, tweenFromTo.To, tweenFromTo.Duration);
         }
-        
-        
     }
+
     public struct TweenHandle
     {
-        
         /// <summary>
         /// The ID of Type.
         /// </summary>
         public int TypeId;
+
         /// <summary>
         /// The ID of tween entity.
         /// </summary>
@@ -125,16 +149,19 @@ namespace RayTween
         {
             return TweenStorageManager.ValidCheck(this, out denseId);
         }
+
         internal bool TryGetBuffer(out TweenDataBuffer buffer)
-            {
-             buffer = TweenDataBuffer.BufferList[TypeId];
+        {
+            buffer = TweenDataBuffer.BufferList[TypeId];
             if (buffer.HasSameHandle(Index, Version))
             {
                 buffer = TweenDataBuffer.BufferList[TypeId];
                 return true;
             }
+
             return false;
-}
+        }
+
         public bool IsIdling => TweenDataBuffer.BufferList[TypeId].HasSameHandle(Index, Version);
         public bool IsActive() => TweenStorageManager.IsActive(this);
 
@@ -147,16 +174,18 @@ namespace RayTween
     public struct TweenHandle<TValue, TPlugin> where TValue : unmanaged
         where TPlugin : unmanaged, ITweenPlugin<TValue>
     {
-     
         internal static readonly TweenDataBuffer<TValue, TPlugin> Buffer = TweenDataBuffer<TValue, TPlugin>.Instance;
-         private static  TweenHandle<TValue, TPlugin> BufferedHandle=>new TweenHandle<TValue, TPlugin>(Buffer.Handle.Index,Buffer.Handle.Version);
-         static TweenHandle()
+
+        private static TweenHandle<TValue, TPlugin> BufferedHandle =>
+            new TweenHandle<TValue, TPlugin>(Buffer.Handle.Index, Buffer.Handle.Version);
+
+        static TweenHandle()
         {
             TweenDispatcher.OnUpdateAction += Buffer.ScheduleIfMatchTiming;
         }
 
-         public static int TypeId => Buffer.TypeId;
-       
+        public static int TypeId => Buffer.TypeId;
+
 
         static void ScheduleBuffer()
         {
@@ -164,6 +193,17 @@ namespace RayTween
         }
 
         public bool IsIdling => this == BufferedHandle;
+
+        bool TryGetBuffer(out TweenDataBuffer<TValue, TPlugin> buffer)
+        {
+            buffer = TweenDataBuffer<TValue, TPlugin>.Instance;
+            if (buffer.HasSameHandle(Index, Version))
+            {
+                return true;
+            }
+
+            return false;
+        }
 
         /// <summary>
         /// The ID of tween entity.
@@ -174,7 +214,7 @@ namespace RayTween
         /// The shared version of tween entity.
         /// </summary>
         public int Version;
-        
+
         internal TweenHandle(int index, int version)
         {
             Index = index;
@@ -189,6 +229,7 @@ namespace RayTween
                 return ref TweenStorageManager.GetTweenData(this);
             }
         }
+
         internal ref TweenCallbackData CallbackData
         {
             get
@@ -198,53 +239,63 @@ namespace RayTween
             }
         }
 
-        public static TweenHandle<TValue, TPlugin> Create(TValue start, TValue end, float duration,RelativeMode relativeMode = RelativeMode.AbsoluteValue)
+        public static TweenHandle<TValue, TPlugin> Create(TValue start, TValue end, float duration,
+            RelativeMode relativeMode = RelativeMode.AbsoluteValue)
         {
             ScheduleBuffer();
             var (entryIndex, version) = TweenStorageManager.Alloc();
-            Buffer.InitFromTo(start, end, duration,relativeMode);
-            Buffer.Set( (entryIndex, version) );
-            return  new TweenHandle<TValue, TPlugin>()
+            var buffer = Buffer;
+            buffer.InitFromTo(start, end, duration, relativeMode);
+            buffer.Set((entryIndex, version));
+            return new TweenHandle<TValue, TPlugin>()
                 { Index = entryIndex, Version = version };
         }
-        public static TweenHandle<TValue, TPlugin> Create(Action<TValue> action,TValue start, TValue end, float duration,RelativeMode relativeMode = RelativeMode.AbsoluteValue)
+
+        public static TweenHandle<TValue, TPlugin> Create(Action<TValue> action, TValue start, TValue end,
+            float duration, RelativeMode relativeMode = RelativeMode.AbsoluteValue)
         {
             ScheduleBuffer();
             var (entryIndex, version) = TweenStorageManager.Alloc();
-            Buffer.InitFromTo(start, end, duration,relativeMode);
-            Buffer.Set( (entryIndex, version) );
+            Buffer.InitFromTo(start, end, duration, relativeMode);
+            Buffer.Set((entryIndex, version));
             Buffer.CallbackData.UpdateAction = action;
-            return  new TweenHandle<TValue, TPlugin>()
+            return new TweenHandle<TValue, TPlugin>()
                 { Index = entryIndex, Version = version };
         }
-        public static TweenHandle<TValue, TPlugin> Create<TTarget>(TTarget target,Action<TTarget,TValue> action,TValue start, TValue end, float duration,RelativeMode relativeMode = RelativeMode.AbsoluteValue)where TTarget : class
+
+        public static TweenHandle<TValue, TPlugin> Create<TTarget>(TTarget target, Action<TTarget, TValue> action,
+            TValue start, TValue end, float duration, RelativeMode relativeMode = RelativeMode.AbsoluteValue)
+            where TTarget : class
         {
             ScheduleBuffer();
             var (entryIndex, version) = TweenStorageManager.Alloc();
-            Buffer.InitFromTo(start, end, duration,relativeMode);
+            Buffer.InitFromTo(start, end, duration, relativeMode);
             Buffer.CallbackData.TargetCount = 1;
             Buffer.CallbackData.Target1 = target;
             Buffer.CallbackData.UpdateAction = action;
-            Buffer.Set( (entryIndex, version) );
-            return  new TweenHandle<TValue, TPlugin>()
+            Buffer.Set((entryIndex, version));
+            return new TweenHandle<TValue, TPlugin>()
                 { Index = entryIndex, Version = version };
         }
-        public static TweenHandle<TValue, TPlugin> Create<TTarget1,TTarget2>(TTarget1 target1,TTarget2 target2,Action<TTarget1,TTarget2,TValue> action,TValue start, TValue end, float duration,RelativeMode relativeMode = RelativeMode.AbsoluteValue)where TTarget1 : class where TTarget2 : class
+
+        public static TweenHandle<TValue, TPlugin> Create<TTarget1, TTarget2>(TTarget1 target1, TTarget2 target2,
+            Action<TTarget1, TTarget2, TValue> action, TValue start, TValue end, float duration,
+            RelativeMode relativeMode = RelativeMode.AbsoluteValue) where TTarget1 : class where TTarget2 : class
         {
             ScheduleBuffer();
             var (entryIndex, version) = TweenStorageManager.Alloc();
-            Buffer.InitFromTo(start, end, duration,relativeMode);
+            Buffer.InitFromTo(start, end, duration, relativeMode);
             Buffer.CallbackData.TargetCount = 2;
             Buffer.CallbackData.Target1 = target1;
             Buffer.CallbackData.Target2 = target2;
             Buffer.CallbackData.UpdateAction = action;
-            
-            Buffer.Set( (entryIndex, version) );
-            return  new TweenHandle<TValue, TPlugin>()
+
+            Buffer.Set((entryIndex, version));
+            return new TweenHandle<TValue, TPlugin>()
                 { Index = entryIndex, Version = version };
         }
-        
-       
+
+
         public readonly bool Equals(TweenHandle<TValue, TPlugin> other)
         {
             return Index == other.Index && Version == other.Version;
@@ -275,98 +326,92 @@ namespace RayTween
 
         public TweenHandle<TValue, TPlugin> From(TValue from)
         {
-            if (IsIdling)
-            {
-                Data.StartValue = from;
-            }
-          
+            if (TryGetBuffer(out var buffer))buffer.From(from);
+
             return this;
         }
 
         public TweenHandle<TValue, TPlugin> SetLoops(int loopCount)
-        { if(IsIdling)
-                Buffer.SetLoops(loopCount);
+        {
+            if (TryGetBuffer(out var buffer))buffer.SetLoops(loopCount);
             return this;
         }
 
         public TweenHandle<TValue, TPlugin> SetLoops(int loopCount, LoopType loopType)
         {
-            if(IsIdling)
-            {
-                Buffer.SetLoops(loopCount, loopType);
-            }
+            if (TryGetBuffer(out var buffer))buffer.SetLoops(loopCount, loopType);
             
+
 
             return this;
         }
 
         public TweenHandle<TValue, TPlugin> SetEase(Ease ease)
-        { if(IsIdling)
-                Buffer.SetEase(ease);
+        {
+            if (TryGetBuffer(out var buffer)) buffer.SetEase(ease);
             return this;
         }
 
         public TweenHandle<TValue, TPlugin> SetDelay(float delay)
         {
-            if(IsIdling)
-                Buffer.SetDelay(delay);
+            if (TryGetBuffer(out var buffer)) buffer.SetDelay(delay);
             return this;
         }
 
-       
 
         public TweenHandle<TValue, TPlugin> SetTimeKind(TweenTimeKind timeKind)
         {
-            if(IsIdling)
-                Buffer.SetTimeKind(timeKind);
-            
+            if (TryGetBuffer(out var buffer)) buffer.SetTimeKind(timeKind);
+
 
             return this;
         }
 
         public TweenHandle<TValue, TPlugin> OnDispose(Action<TweenResult> action)
-        { if(IsIdling)
-                Buffer.OnDispose(action);
+        {
+            if (TryGetBuffer(out var buffer)) buffer.OnDispose(action);
             return this;
         }
 
         public TweenHandle<TValue, TPlugin> OnDispose<TTarget>(TTarget target,
             Action<TTarget, TweenResult> action) where TTarget : class
-        { if(IsIdling)
-                Buffer.OnDispose(target, action);
+        {
+            if (TryGetBuffer(out var buffer)) buffer.OnDispose(target, action);
             return this;
         }
 
         public TweenHandle<TValue, TPlugin> OnCancel(Action action)
-        { if(IsIdling)
-                Buffer.OnCancel(action);
+        {
+            if (TryGetBuffer(out var buffer)) buffer.OnCancel(action);
             return this;
         }
 
         public TweenHandle<TValue, TPlugin> OnCancel<TTarget>(TTarget target, Action<TTarget> action)
             where TTarget : class
-        { if(IsIdling)
-                Buffer.OnCancel(target,action);
+        {
+            if (TryGetBuffer(out var buffer))
+                buffer.OnCancel(target, action);
             return this;
         }
 
         public TweenHandle<TValue, TPlugin> OnComplete(Action action)
-        { if(IsIdling)
-                Buffer.OnComplete(action);
+        {
+            if (TryGetBuffer(out var buffer))
+                buffer.OnComplete(action);
 
             return this;
         }
 
         public TweenHandle<TValue, TPlugin> OnComplete<TTarget>(TTarget target, Action<TTarget> action)
             where TTarget : class
-        { if(IsIdling)
-                Buffer.OnComplete(target,action);
+        {
+            if (TryGetBuffer(out var buffer)) buffer.OnComplete(target, action);
             return this;
         }
 
         public TweenHandle<TValue, TPlugin> SetScheduler(ITweenScheduler scheduler)
         {
-            if (IsIdling) 
+            if (IsIdling)
                 Buffer.SetScheduler(scheduler);
             return this;
         }
@@ -379,7 +424,7 @@ namespace RayTween
 
         public TweenHandle AsNoType()
         {
-            return new TweenHandle() { TypeId = TypeId,Index = Index, Version = Version };
+            return new TweenHandle() { TypeId = TypeId, Index = Index, Version = Version };
         }
 
         public void Forget()
@@ -413,8 +458,8 @@ namespace RayTween
 
             TweenStorageManager.CompleteTween(AsNoType());
         }
-        
-        public PreservedTween<TValue,TPlugin> Preserve()
+
+        public PreservedTween<TValue, TPlugin> Preserve()
         {
             return new PreservedTween<TValue, TPlugin>(this);
         }

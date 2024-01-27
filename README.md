@@ -1,3 +1,17 @@
+
+
+
+# Special Thanks 
+This library is based on the following libraries created by [AnnulusGames](https://github.com/AnnulusGames).
+
+### TweenSystem
+**[LitMotion](https://github.com/AnnulusGames/LitMotion)**
+### Path tween
+**[MagicTween](https://github.com/AnnulusGames/MagicTween)**
+
+# Performance
+Comparing with [LitMotion](https://github.com/AnnulusGames/LitMotion), start up performance is  1.1 times slower, and the update performance is same.
+Exceptionally, string tween is faster than LitMotion.
 ## How to install
 
 ### Package Manager

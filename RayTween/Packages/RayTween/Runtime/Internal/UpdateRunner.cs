@@ -2,6 +2,7 @@
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Jobs;
+using UnityEngine.Profiling;
 
 namespace RayTween.Internal
 {
@@ -21,12 +22,15 @@ namespace RayTween.Internal
         }
 
         readonly TweenStorage<TValue, TPlugin> storage;
+        static readonly string Marker = $"[UpdateRunner<{typeof(TValue).Name},{typeof(TPlugin).Name}>]";
 
         public unsafe void Update(double time, double unscaledTime, double realtime)
         {
          
             var count = storage.Count;
             if(count==0)return;
+          
+            
             using var output = new NativeArray<TValue>(count, Allocator.TempJob, NativeArrayOptions.UninitializedMemory);
             using var completedIndexList = new NativeList<int>(count, Allocator.TempJob);
 
@@ -47,26 +51,26 @@ namespace RayTween.Internal
                     job.Run(count);
                 }
                 else job.Schedule(count, 16).Complete();
-
+                Profiler.BeginSample(Marker);
                 // invoke delegates
                 var callbackSpan = storage.GetCallbacksSpan();
                 var outputPtr = (TValue*)output.GetUnsafePtr();
                 for (int i = 0; i < callbackSpan.Length; i++)
                 {
-                    var status = (dataPtr + i)->Status;
+                    ref var status =ref dataPtr[i].Status;
                     ref var callbackData = ref callbackSpan[i];
                     if (status == TweenStatus.Playing || (status == TweenStatus.Delayed && !callbackData.SkipValuesDuringDelay))
                     {
                         try
                         {
-                            callbackData.InvokeUnsafe(outputPtr[i]);
+                            callbackData.InvokeUnsafe(in outputPtr[i]);
                         }
                         catch (Exception ex)
                         {
                             TweenDispatcher.GetUnhandledExceptionHandler()?.Invoke(ex);
                             if (callbackData.CancelOnError)
                             {
-                                (dataPtr + i)->Status = TweenStatus.Canceled;
+                                status = TweenStatus.Canceled;
                                 callbackData.InvokeAndDispose(new TweenResult(){ResultType = TweenResultType.CancelWithError,Error = ex});
 
                             }
@@ -83,7 +87,7 @@ namespace RayTween.Internal
                             TweenDispatcher.GetUnhandledExceptionHandler()?.Invoke(ex);
                             if (callbackData.CancelOnError)
                             {
-                                (dataPtr + i)->Status = TweenStatus.Canceled;
+                                status = TweenStatus.Canceled;
                                 callbackData.InvokeAndDispose(new TweenResult(){ResultType = TweenResultType.CancelWithError,Error = ex});
 
                                 continue;
@@ -95,7 +99,7 @@ namespace RayTween.Internal
                     }
                 }
             }
-
+            Profiler.EndSample();
             storage.RemoveAll(completedIndexList);
         }
 
