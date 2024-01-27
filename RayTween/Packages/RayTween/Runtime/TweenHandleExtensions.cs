@@ -1,12 +1,29 @@
-﻿using UnityEngine;
+﻿using RayTween.Internal;
+using UnityEngine;
 
 namespace RayTween
 {
     public static class TweenHandleExtensions
     {
-        
-        
-        
+        public static TweenHandle<TValue, TPlugin> SetLink<TValue, TPlugin>(this TweenHandle<TValue, TPlugin> handle,GameObject gameObject) where TValue : unmanaged
+            where TPlugin : unmanaged, ITweenPlugin<TValue>
+        {
+            GetOrAddComponent  <TweenHandleLinker>(gameObject).Register(handle.AsNoType());
+            return handle;
+        }
+        public static TweenHandle<TValue, TPlugin> SetLink<TValue, TPlugin>(this TweenHandle<TValue, TPlugin> handle,Component component) where TValue : unmanaged
+            where TPlugin : unmanaged, ITweenPlugin<TValue>
+        {
+            GetOrAddComponent  <TweenHandleLinker>(component.gameObject).Register(handle.AsNoType());
+            return handle;
+        }
+        private static TComponent GetOrAddComponent<TComponent>(GameObject target) where TComponent : Component
+        {
+            TComponent component;
+            if (!target.TryGetComponent<TComponent>(out component))
+                component = target.AddComponent<TComponent>();
+            return component;
+        }
         public static TweenHandle<TValue, TPlugin> SetOptions<TValue, TPlugin,TOptions>(this TweenHandle<TValue, TPlugin> handle,TOptions options) where TValue : unmanaged
             where TPlugin : unmanaged, ITweenPlugin<TValue,TOptions>
         {
@@ -33,5 +50,7 @@ namespace RayTween
         {
             return handle;
         }
+        
+        
     }
 }
