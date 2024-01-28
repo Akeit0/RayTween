@@ -31,7 +31,7 @@
     }
 
     public interface IRelativeTweenPlugin<TValue, in TOptions> : IRelativeTweenPlugin<TValue>,
-        ITweenPlugin<TValue, TOptions> where TValue : unmanaged
+        ITweenPlugin<TValue> where TValue : unmanaged
     {
     }
 }

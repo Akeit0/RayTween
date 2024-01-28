@@ -35,7 +35,7 @@
         "com.unity.collections": "1.5.1",
         "com.unity.mathematics": "1.0.0"
       },
-      "hash": "31665f68ab75a32459937621d4df8d7bebd3549d"
+      "hash": "db429969b7da17a146ed0c0ea4dd9094f479e2ea"
     },
     "com.cysharp.unitask": {
       "version": "https://github.com/Cysharp/UniTask.git?path=src/UniTask/Assets/Plugins/UniTask",
@@ -43,6 +43,13 @@
       "source": "git",
       "dependencies": {},
       "hash": "66de0d3a58b256b6e0194f285cc530fd0c08407b"
+    },
+    "com.cysharp.zstring": {
+      "version": "https://github.com/Cysharp/ZString.git?path=src/ZString.Unity/Assets/Scripts/ZString",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "716ce29ccf20a457683ef4061be93fb286b4e8b6"
     },
     "com.unity.burst": {
       "version": "1.8.12",

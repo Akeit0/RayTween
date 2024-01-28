@@ -1,9 +1,10 @@
 #if RAYTWEEN_SUPPORT_TMP
+using System;
 using System.Buffers;
 using UnityEngine;
 using TMPro;
 using RayTween.Internal;
-using Unity.Collections.LowLevel.Unsafe;
+using RayTween.Plugins;
 #if RAYTWEEN_SUPPORT_ZSTRING
 using Cysharp.Text;
 #endif
@@ -177,24 +178,19 @@ namespace RayTween.Extensions
         /// <remarks>
         /// Note: This extension method uses TMP_Text.SetText() to achieve zero allocation, so it is recommended to use this method when binding to text.
         /// </remarks>
-        /// <typeparam name="TPlugin">The type of Plugin that support value animation</typeparam>
         /// <param name="fromTo">From To Duration</param>
         /// <param name="text">Target TMP_Text</param>
         /// <returns>Handle of the created tween data.</returns>
-        public static unsafe TweenHandle<UnsafeString, TPlugin> BindToText<TPlugin>(
-            this TweenFromTo<UnsafeString, TPlugin> fromTo, TMP_Text text)
-            where TPlugin : unmanaged, ITweenPlugin<UnsafeString>
+        public static  TweenHandle<UnsafeString, StringTweenPlugin> BindToText(
+            this TweenFromTo<string, StringTweenPlugin> fromTo, TMP_Text text)
         {
             Error.IsNull(text);
             return fromTo.Bind(text, static (target, x) =>
             {
-                var length = x.Length;
+                var span = x.AsSpan();
+                var length = span.Length;
                 var buffer = ArrayPool<char>.Shared.Rent(length);
-                fixed (char* c = buffer)
-                {
-                    UnsafeUtility.MemCpy(c, x.Value.Ptr, length * 2);
-                }
-
+                span.CopyTo(buffer.AsSpan(0, length));
                 target.SetText(buffer, 0, length);
                 ArrayPool<char>.Shared.Return(buffer);
             });
@@ -208,6 +204,7 @@ namespace RayTween.Extensions
         /// </remarks>
         /// <typeparam name="TPlugin">The type of Plugin that support value animation</typeparam>
         /// <param name="fromTo">From To Duration</param>
+        /// <param name="text"></param>
         /// <returns>Handle of the created tween data.</returns>
         public static TweenHandle<int, TPlugin> BindToText<TPlugin>(this TweenFromTo<int, TPlugin> fromTo,
             TMP_Text text)
@@ -279,6 +276,7 @@ namespace RayTween.Extensions
         /// </remarks>
         /// <typeparam name="TPlugin">The type of Plugin that support value animation</typeparam>
         /// <param name="fromTo">From To Duration</param>
+        /// <param name="text"></param>
         /// <returns>Handle of the created tween data.</returns>
         public static TweenHandle<float, TPlugin> BindToText<TPlugin>(this TweenFromTo<float, TPlugin> fromTo,
             TMP_Text text)

@@ -4,7 +4,9 @@
     "references": [
         "GUID:bc04705c38d48554a97c9badc4c0f496",
         "GUID:6055be8ebefd69e48b49212b09b47b2f",
-        "GUID:e0cd26848372d4e5c891c569017e11f1"
+        "GUID:e0cd26848372d4e5c891c569017e11f1",
+        "GUID:d8b63aba1907145bea998dd612889d6b",
+        "GUID:33661e06c33d31b4c9223810bf503247"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
@@ -18,6 +20,31 @@
             "name": "com.unity.textmeshpro",
             "expression": "",
             "define": "RAYTWEEN_SUPPORT_TMP"
+        },
+        {
+            "name": "com.unity.visualeffectgraph",
+            "expression": "",
+            "define": "RAYTWEEN_SUPPORT_VFX_GRAPH"
+        },
+        {
+            "name": "com.cysharp.zstring",
+            "expression": "",
+            "define": "RAYTWEEN_SUPPORT_ZSTRING"
+        },
+        {
+            "name": "com.unity.modules.uielements",
+            "expression": "",
+            "define": "RAYTWEEN_SUPPORT_UIELEMENTS"
+        },
+        {
+            "name": "com.unity.ugui",
+            "expression": "",
+            "define": "RAYTWEEN_SUPPORT_UGUI"
+        },
+        {
+            "name": "com.unity.modules.audio",
+            "expression": "",
+            "define": "RAYTWEEN_SUPPORT_UNITY_AUDIO"
         }
     ],
     "noEngineReferences": false

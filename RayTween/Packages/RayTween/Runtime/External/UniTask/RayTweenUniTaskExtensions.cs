@@ -46,7 +46,7 @@ namespace RayTween
         /// <typeparam name="TValue">The type of value to animate</typeparam>
         
         /// <typeparam name="TPlugin">The type of Plugin that support value animation</typeparam>
-        /// <param name="builder">This builder</param>
+        /// <param name="fromTo">This fromTo</param>
         /// <param name="progress">Target object that implements IProgress</param>
         /// <returns>Handle of the created Tween data.</returns>
         public static TweenHandle<TValue, TPlugin>  BindToAsyncReactiveProperty<TValue, TPlugin>(this TweenFromTo<TValue, TPlugin> handle, AsyncReactiveProperty<TValue> reactiveProperty)

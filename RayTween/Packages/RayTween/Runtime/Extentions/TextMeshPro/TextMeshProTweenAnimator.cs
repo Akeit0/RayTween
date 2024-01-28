@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using RayTween.Internal;
 using UnityEngine;
 using TMPro;
 #if UNITY_EDITOR
@@ -113,7 +112,6 @@ namespace RayTween.Extensions
                             Return(fromTail);
                             animators[j] = null;
                             j--;
-                            continue;
                         }
                         else
                         {
@@ -132,8 +130,7 @@ namespace RayTween.Extensions
                 tail = i;
                 break;
 
-            NEXT_LOOP:
-                continue;
+            NEXT_LOOP:;
             }
         }
 

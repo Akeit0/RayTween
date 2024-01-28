@@ -10,10 +10,10 @@ using RayTween.Internal;
 
 namespace RayTween.Plugins
 {
-    public struct StringTweenPlugin : ITweenPlugin<UnsafeString, StringOptions>
+    public unsafe struct StringTweenPlugin : ITweenPlugin<UnsafeString, StringOptions>
     {
         internal UnsafeString CustomScrambleChars;
-        public Unity.Mathematics.Random RandomState;
+        public Random RandomState;
         public ScrambleMode ScrambleMode;
         public bool RichTextEnabled;
         public UnsafeString Buffer;
