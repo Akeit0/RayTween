@@ -2,6 +2,7 @@
 using Alchemy.Inspector;
 using Cysharp.Threading.Tasks;
 using LitMotion;
+using LitMotion.Extensions;
 using UnityEngine;
 using RayTween;
 using RayTween.Plugins;
@@ -28,8 +29,28 @@ namespace Scenes
         //     TextTween();
         //     RTween.DelayedCall(3.5f, TMPCharMotionExample);
         // }
+IDSet<string> idSet = new IDSet<string>();
 
-
+(int, int) hc;
+        [Button]
+        void IDSetAddTest()
+        {
+            idSet.Add(Text,out  hc);
+            Debug.Log(hc);
+        }
+        [Button]
+        void IDSetContainsTest()
+        {
+           ;
+            Debug.Log( idSet.Contains(Text));
+            Debug.Log( idSet.Contains(hc));
+        }
+        [Button]
+        void IDSetRemoveTest()
+        {
+            Debug.Log( idSet.Remove(hc));
+            Debug.Log( idSet.Contains(Text));
+        }
         [SerializeField] TMP_Text text;
 
         [Button]
@@ -53,6 +74,8 @@ namespace Scenes
         [Button]
         void TMPCharMotionExample()
         {
+            
+            
           
             // Get the number of characters from TMP_Text.textInfo.characterCount
             for (int i = 0; i < text.textInfo.characterCount; i++)
@@ -66,7 +89,24 @@ namespace Scenes
                     .SetEase(Ease.OutQuad) .SetEase(Ease.OutQuad);
             }
         }
+        [Button]
+        void TMPCharMotionExampleL()
+        {
+            
+            
+          
+            // Get the number of characters from TMP_Text.textInfo.characterCount
+            for (int i = 0; i < text.textInfo.characterCount; i++)
+            {
+                LMotion.Create(Color.white, Color.red, 1f) .WithDelay(i * 0.1f).BindToTMPCharColor(text, i)
+                   ;
+                   
 
+                LMotion.Punch.Create(Vector3.zero, Vector3.up * 15f, 1f).WithDelay(i * 0.1f)
+                    .WithEase(LitMotion.Ease.OutQuad).BindToTMPCharPosition(text, i)
+                    ;
+            }
+        }
         public Vector3[] Path;
 
         [Button]

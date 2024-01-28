@@ -17,8 +17,6 @@ namespace RayTween.Extensions
 //             return v;
 //         }
 
-        private static Func<object,Vector3> PositionGetter = target => ((Transform) target).position;
-        
         
         internal static Vector3 WithX(this Vector3 v, float x) => new Vector3(x, v.y, v.z);
         internal static Vector3 WithY(this Vector3 v, float y) => new Vector3(v.x, y, v.z);
