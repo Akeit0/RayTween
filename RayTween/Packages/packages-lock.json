@@ -51,6 +51,13 @@
       "dependencies": {},
       "hash": "716ce29ccf20a457683ef4061be93fb286b4e8b6"
     },
+    "com.neuecc.unirx": {
+      "version": "https://github.com/neuecc/UniRx.git?path=Assets/Plugins/UniRx/Scripts",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "7cce378b3f8c8943b4cac8e847bdbb8e2e1802d1"
+    },
     "com.unity.burst": {
       "version": "1.8.12",
       "depth": 0,

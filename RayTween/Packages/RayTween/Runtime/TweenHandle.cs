@@ -191,7 +191,7 @@ namespace RayTween
 
         public bool IsIdling => Buffer.HasSameHandle(Index, Version);
 
-        bool TryGetBuffer(out TweenDataBuffer<TValue, TPlugin> buffer)
+        internal  bool TryGetBuffer(out TweenDataBuffer<TValue, TPlugin> buffer)
         {
             buffer = Buffer;
             if (buffer.HasSameHandle(Index, Version))
