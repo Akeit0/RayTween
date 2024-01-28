@@ -30,9 +30,10 @@ namespace RayTween.Internal
         public void RemoveAtSwapBack(int index)
         {
             CheckIndex(index);
+            tailIndex--;
             array[index] = array[tailIndex];
             array[tailIndex] = default;
-            tailIndex--;
+         
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

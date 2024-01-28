@@ -259,12 +259,11 @@ namespace RayTween.Internal
         {
             if(hasToDisposeTPlugin)
             {
-                foreach (ref var d in dataArray.AsSpan())
+                foreach (ref var d in GetDataSpan())
                 {
                    d.Dispose();
                 }
             }
-            toEntryIndex.AsSpan().Clear();
             for (int i = 0; i < tail; i++)
             {
                 if (dataArray[i].Status != TweenStatus.None)
@@ -284,7 +283,7 @@ namespace RayTween.Internal
                     TweenStorageManager.Free((int)entryIndex);
                 }
             }
-           
+            toEntryIndexSpan.Clear();
             tail = 0;
         }
     }
