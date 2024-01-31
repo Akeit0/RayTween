@@ -25,6 +25,7 @@ namespace RayTween
                     TweenStorageManager.AddStorage(storage);
                     updateStorage = storage;
                 }
+
                 return updateStorage;
             }
         }
@@ -53,8 +54,6 @@ namespace RayTween
         /// <param name="deltaTime">Delta time</param>
         public static void Update(double deltaTime)
         {
-            
-           
             if (deltaTime < 0f) throw new ArgumentException("deltaTime must be 0 or higher.");
             Time += deltaTime;
             Update();
@@ -71,8 +70,9 @@ namespace RayTween
             }
             catch (Exception e)
             {
-               Debug.LogException(e);
+                Debug.LogException(e);
             }
+
             var span = updateRunners.AsSpan();
             for (int i = 0; i < span.Length; i++)
             {
@@ -92,20 +92,21 @@ namespace RayTween
             }
         }
 
-        internal static   int Schedule<TValue, TPlugin>(TweenHandle<TValue,TPlugin> handle,ref TweenData<TValue, TPlugin> data, ref TweenCallbackData callbackData)
+        internal static int Schedule<TValue, TPlugin>(TweenHandle<TValue, TPlugin> handle,
+            ref TweenData<TValue, TPlugin> data, ref TweenCallbackData callbackData)
             where TValue : unmanaged
             where TPlugin : unmanaged, ITweenPlugin<TValue>
         {
             TweenStorage<TValue, TPlugin> storage = Cache<TValue, TPlugin>.GetOrCreate();
             if (Cache<TValue, TPlugin>.updateRunner == null)
             {
-                var runner = new UpdateRunner<TValue, TPlugin>(storage);
+                var runner = new UpdateRunner<TValue, TPlugin>(storage, Time, Time, Time);
                 updateRunners.Add(runner);
                 Cache<TValue, TPlugin>.updateRunner = runner;
             }
 
-             storage.Append(handle,data, callbackData);
-             return storage.StorageId;
+            storage.Append(handle, data, callbackData);
+            return storage.StorageId;
         }
     }
 }

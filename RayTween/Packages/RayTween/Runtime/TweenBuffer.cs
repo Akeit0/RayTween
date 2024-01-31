@@ -107,26 +107,7 @@ namespace RayTween
             return this;
         }
 
-        public PreservedTween<TValue, TPlugin> From(TValue start)
-        {
-            if (IsPreserved)
-            {
-                buffer.From(start);
-            }
-
-            return this;
-        }
-
-        public PreservedTween<TValue, TPlugin> From(bool isFrom)
-        {
-            if (IsPreserved)
-            {
-                buffer.From(isFrom);
-            }
-
-            return this;
-        }
-
+      
         public PreservedTween<TValue, TPlugin> OnComplete(Action action)
         {
             if (IsPreserved)
@@ -220,11 +201,11 @@ namespace RayTween
             return this;
         }
 
-        public PreservedTween<TValue, TPlugin> SetLink(GameObject gameObject)
+        public PreservedTween<TValue, TPlugin> SetLink(GameObject gameObject,bool cancelOnDisable=false)
         {
             if (IsPreserved)
             {
-                Handle.SetLink(gameObject);
+                Handle.SetLink(gameObject,cancelOnDisable);
             }
 
             return this;
@@ -255,6 +236,7 @@ namespace RayTween
             result.StackTrace = Instance.StackTrace;
             result.playModeVersion = Instance.playModeVersion;
 #endif
+            
             result.Scheduler = Instance.Scheduler;
             result.TweenData = Instance.TweenData;
             result.CallbackData = Instance.CallbackData;
@@ -306,7 +288,8 @@ namespace RayTween
             {
                 TweenData.Dispose();
             }
-
+            tweenData.Time = 0;
+            tweenData.TweenSpeed = 1;
             tweenData.StartValue = start;
             tweenData.EndValue = end;
             tweenData.Duration = duration;
@@ -336,7 +319,7 @@ namespace RayTween
 #if UNITY_EDITOR
                     if (Scheduler.UpdateTiming!=UpdateTiming.EditorUpdate&& playModeVersion != EditorTweenDispatcher.PlayModeVersion)
                     {
-                        Debug.LogWarning($"Tween was created before PlayModeStateChanged. {playModeVersion} -> {EditorTweenDispatcher.PlayModeVersion}");
+                        Debug.LogWarning($"Tween was created before PlayModeStateChanged. {playModeVersion} -> {EditorTweenDispatcher.PlayModeVersion}{ StackTrace?.ToString()}");
                         Handle.Index = -1;
                         return;
                     }
@@ -401,15 +384,12 @@ namespace RayTween
             TweenData.TimeKind = timeKind;
         }
 
-        public void From(TValue start)
+        public void SetCancelOnError(bool  cancelOnError=true)
         {
-            TweenData.StartValue = start;
+            CallbackData.CancelOnError = cancelOnError;
         }
 
-        public void From(bool isFrom)
-        {
-            IsFrom = isFrom;
-        }
+        
 
         public void OnComplete(Action action)
         {

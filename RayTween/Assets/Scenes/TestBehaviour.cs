@@ -7,9 +7,12 @@ using UnityEngine;
 using RayTween;
 using RayTween.Plugins;
 using RayTween.Extensions;
+using RayTween.Internal;
 using TMPro;
+using UnityEditor;
 using Ease = RayTween.Ease;
 using LoopType = RayTween.LoopType;
+using Object = UnityEngine.Object;
 using Random = Unity.Mathematics.Random;
 using ScrambleMode = RayTween.ScrambleMode;
 using StringOptions = RayTween.StringOptions;
@@ -20,37 +23,6 @@ namespace Scenes
     {
         public string Text;
 
-        // private void Start()
-        // {
-        //     transform.position = default;
-        //     Application.targetFrameRate = 60;
-        //     Circle(3).Forget();
-        //     // RTween.Create("", "Ray<Tween", 3f).BindToText(text).OnDispose((x) => Debug.Log(x.ResultType)).Forget();
-        //     TextTween();
-        //     RTween.DelayedCall(3.5f, TMPCharMotionExample);
-        // }
-IDSet<string> idSet = new IDSet<string>();
-
-(int, int) hc;
-        [Button]
-        void IDSetAddTest()
-        {
-            idSet.Add(Text,out  hc);
-            Debug.Log(hc);
-        }
-        [Button]
-        void IDSetContainsTest()
-        {
-           ;
-            Debug.Log( idSet.Contains(Text));
-            Debug.Log( idSet.Contains(hc));
-        }
-        [Button]
-        void IDSetRemoveTest()
-        {
-            Debug.Log( idSet.Remove(hc));
-            Debug.Log( idSet.Contains(Text));
-        }
         [SerializeField] TMP_Text text;
 
         [Button]
@@ -69,6 +41,7 @@ IDSet<string> idSet = new IDSet<string>();
                     RichTextEnabled = true,
                     CustomScrambleChars = "RayTween",
                 }).SetScheduler(RayTween.Editor.EditorTweenScheduler.Update);
+            
         }
 
         [Button]
@@ -80,19 +53,17 @@ IDSet<string> idSet = new IDSet<string>();
             // Get the number of characters from TMP_Text.textInfo.characterCount
             for (int i = 0; i < text.textInfo.characterCount; i++)
             {
-                RTween.Create(Color.white, Color.red, 1f).BindToTMPCharColor(text, i)
-                    .SetDelay(i * 0.1f);
-                   
+              RTween.Create(Color.white, Color.red, 1f).BindToTMPCharColor(text, i)
+                    .SetDelay(i * 0.1f).SetLink(gameObject,true);
 
-                RTween.Punch.Create(Vector3.zero, Vector3.up * 15f, 1f).BindToTMPCharPosition(text, i)
+               RTween.Punch.Create(Vector3.zero, Vector3.up * 15f, 1f).BindToTMPCharPosition(text, i)
                     .SetDelay(i * 0.1f)
-                    .SetEase(Ease.OutQuad) .SetEase(Ease.OutQuad);
+                    .SetEase(Ease.OutQuad) .SetEase(Ease.OutQuad).SetLink(gameObject,true);
             }
         }
         [Button]
         void TMPCharMotionExampleL()
         {
-            
             
           
             // Get the number of characters from TMP_Text.textInfo.characterCount
@@ -112,26 +83,26 @@ IDSet<string> idSet = new IDSet<string>();
         [Button]
         async UniTaskVoid Circle(int count)
         {
-            using PreservedTween<Vector3, Path3DTweenPlugin> p = RTween.CreatePath3D(3f).BindToPosition(transform)
-                .WithPath(
-                    Path.AsSpan()).SetOptions(new PathTweenOptions(PathType.CatmullRom, true)).SetEase(Ease.OutSine)
-                .SetLoops(3, LoopType.Flip).Preserve().SetLink(this.gameObject);
+            // using PreservedTween<Vector3, Path3DTweenPlugin> p = RTween.CreatePath3D(3f).BindToPosition(transform)
+            //     .WithPath(
+            //         Path.AsSpan()).SetOptions(new PathTweenOptions(PathType.CatmullRom, true)).SetEase(Ease.OutSine)
+            //     .SetLoops(3, LoopType.Flip).SetLink(this.gameObject).Preserve();
 
             for (int i = 0; i < count; i++)
             {
                 RTween.Create(4f, 0.3f).BindToPositionY(transform).SetEase(Ease.OutSine).SetLoops(2, LoopType.Yoyo)
-                    .Forget();
+                    .SetLink(this.gameObject,true)  .Forget();
 
-                await RTween.Create(4f, 0.3f).BindToPositionX(transform).SetEase(Ease.InSine);
+                await RTween.Create(4f, 0.3f).BindToPositionX(transform).SetEase(Ease.InSine).SetLink(this.gameObject,true);
 
-                await RTween.Create(8f, 0.3f).BindToPositionX(transform).SetEase(Ease.OutSine);
+                await RTween.Create(8f, 0.3f).BindToPositionX(transform).SetEase(Ease.OutSine).SetLink(this.gameObject,true);
 
                 RTween.Create(-4f, 0.3f).BindToPositionY(transform).SetEase(Ease.OutSine).SetLoops(2, LoopType.Yoyo)
-                    .Forget();
+                    .SetLink(this.gameObject).Forget();
 
-                await RTween.Create(4f, 0.3f).BindToPositionX(transform).SetEase(Ease.InSine);
+                await RTween.Create(4f, 0.3f).BindToPositionX(transform).SetEase(Ease.InSine).SetLink(this.gameObject,true);
 
-                await RTween.Create(0f, 0.3f).BindToPositionX(transform).SetEase(Ease.OutSine);
+                await RTween.Create(0f, 0.3f).BindToPositionX(transform).SetEase(Ease.OutSine).SetLink(this.gameObject,true);
             }
         }
 
@@ -142,5 +113,35 @@ IDSet<string> idSet = new IDSet<string>();
             
             
         }
-}
+
+        // void Start()
+        // {
+        //     TweenDispatcher.OnUpdateAction += OnUpdate;
+        //     unRegistered = false;
+        // }
+        //
+        // bool unRegistered = false;
+        // void OnUpdate(UpdateTiming timing)
+        // {
+        //     //if(timing==UpdateTiming.EditorUpdate)return;
+        //     if (this == null)
+        //     {
+        //         if (!unRegistered&&timing==UpdateTiming.TimeUpdate)
+        //         {
+        //             TweenDispatcher.OnUpdateAction -= OnUpdate;
+        //             unRegistered = true;
+        //         }
+        //         Debug.Log($"{EditorApplication.isPlaying} {timing.ToString()} {Time.frameCount}");
+        //     }
+        //     // else
+        //     // {
+        //     //     Debug.Log($" Update {timing.ToString()} {Time.frameCount}");
+        //     // }
+        // }
+        // void OnDestroy()
+        // {
+        //    
+        //     Debug.Log(Time.frameCount);
+        // }
+    }
 }

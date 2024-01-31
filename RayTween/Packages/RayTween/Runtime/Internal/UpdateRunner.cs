@@ -16,21 +16,32 @@ namespace RayTween.Internal
         where TValue : unmanaged
         where TPlugin : unmanaged, ITweenPlugin<TValue>
     {
-        public UpdateRunner(TweenStorage<TValue, TPlugin> storage)
+        public UpdateRunner(TweenStorage<TValue, TPlugin> storage, double time, double unscaledTime, double realtime)
         {
             this.storage = storage;
+            prevTime = time;
+            prevUnscaledTime = unscaledTime;
+            prevRealtime = realtime;
         }
 
         readonly TweenStorage<TValue, TPlugin> storage;
         static readonly string Marker = $"[UpdateRunner<{typeof(TValue).Name},{typeof(TPlugin).Name}>]";
+        
+        
+        double prevTime;
+        double prevUnscaledTime;
+        double prevRealtime;
 
         public unsafe void Update(double time, double unscaledTime, double realtime)
         {
-         
+            var deltaTime = time - prevTime;
+            var unscaledDeltaTime = unscaledTime - prevUnscaledTime;
+            var realDeltaTime = realtime - prevRealtime;
+            prevTime = time;
+            prevUnscaledTime = unscaledTime;
+            prevRealtime = realtime;
             var count = storage.Count;
             if(count==0)return;
-          
-            
             using var output = new NativeArray<TValue>(count, Allocator.TempJob, NativeArrayOptions.UninitializedMemory);
             using var completedIndexList = new NativeList<int>(count, Allocator.TempJob);
 
@@ -40,9 +51,9 @@ namespace RayTween.Internal
                 var job = new TweenUpdateJob<TValue, TPlugin>()
                 {
                     DataPtr = dataPtr,
-                    Time = time,
-                    UnscaledTime = unscaledTime,
-                    Realtime = realtime,
+                    DeltaTime = deltaTime,
+                    UnscaledDeltaTime = unscaledDeltaTime,
+                    RealDeltaTime = realDeltaTime,
                     Output = output,
                     CompletedIndexList = completedIndexList.AsParallelWriter()
                 };

@@ -1,6 +1,8 @@
 using System;
+using System.Runtime.CompilerServices;
 using RayTween.Plugins;
 using RayTween.Internal;
+using UnityEngine;
 #if UNITY_EDITOR
 #endif
 
@@ -162,12 +164,33 @@ namespace RayTween
             return false;
         }
 
-        public bool IsIdling => TweenDataBuffer.BufferList[TypeId].HasSameHandle(Index, Version);
-        public bool IsActive() => TweenStorageManager.IsActive(this);
+        public bool IsIdling
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get
+            {
+                try
+                {
+                    return TweenDataBuffer.BufferList[TypeId].HasSameHandle(Index, Version);
+                }
+                catch (Exception e)
+                {
+                    Debug.LogException(new Exception(TypeId.ToString(), e));
+                    return false;
+                }
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool IsActive()
+        {
+            return Version >= 1 && TweenStorageManager.IsActive(this);
+        }
 
         public void Complete() => TweenStorageManager.CompleteTween(this);
 
         public void Cancel() => TweenStorageManager.CancelTween(this);
+        public bool TryCancel() => TweenStorageManager.TryCancelTween(this);
     }
 
 
@@ -175,7 +198,7 @@ namespace RayTween
         where TPlugin : unmanaged, ITweenPlugin<TValue>
     {
         internal static readonly TweenDataBuffer<TValue, TPlugin> Buffer = TweenDataBuffer<TValue, TPlugin>.Instance;
-        
+
         static TweenHandle()
         {
             TweenDispatcher.OnUpdateAction += Buffer.ScheduleIfMatchTiming;
@@ -191,7 +214,7 @@ namespace RayTween
 
         public bool IsIdling => Buffer.HasSameHandle(Index, Version);
 
-        internal  bool TryGetBuffer(out TweenDataBuffer<TValue, TPlugin> buffer)
+        internal bool TryGetBuffer(out TweenDataBuffer<TValue, TPlugin> buffer)
         {
             buffer = Buffer;
             if (buffer.HasSameHandle(Index, Version))
@@ -321,23 +344,16 @@ namespace RayTween
             return !(a == b);
         }
 
-        public TweenHandle<TValue, TPlugin> From(TValue from)
-        {
-            if (TryGetBuffer(out var buffer))buffer.From(from);
-
-            return this;
-        }
 
         public TweenHandle<TValue, TPlugin> SetLoops(int loopCount)
         {
-            if (TryGetBuffer(out var buffer))buffer.SetLoops(loopCount);
+            if (TryGetBuffer(out var buffer)) buffer.SetLoops(loopCount);
             return this;
         }
 
         public TweenHandle<TValue, TPlugin> SetLoops(int loopCount, LoopType loopType)
         {
-            if (TryGetBuffer(out var buffer))buffer.SetLoops(loopCount, loopType);
-            
+            if (TryGetBuffer(out var buffer)) buffer.SetLoops(loopCount, loopType);
 
 
             return this;
@@ -364,11 +380,25 @@ namespace RayTween
             return this;
         }
 
+        public TweenHandle<TValue, TPlugin> SetCancelOnError(bool cancelOnError = true)
+        {
+            if (TryGetBuffer(out var buffer)) buffer.SetCancelOnError(cancelOnError);
+            return this;
+        }
+
+        public float TweenSpeed
+        {
+            get => Data.TweenSpeed;
+            set => Data.TweenSpeed = value;
+        }
+
+
         public TweenHandle<TValue, TPlugin> OnDispose(Action<TweenResult> action)
         {
             if (TryGetBuffer(out var buffer)) buffer.OnDispose(action);
             return this;
         }
+
 
         public TweenHandle<TValue, TPlugin> OnDispose<TTarget>(TTarget target,
             Action<TTarget, TweenResult> action) where TTarget : class

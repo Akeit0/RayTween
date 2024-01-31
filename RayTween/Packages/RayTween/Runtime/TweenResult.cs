@@ -6,6 +6,7 @@ namespace RayTween
     public struct TweenResult
     {
         public TweenResultType ResultType;
+        public TweenHandle Handle;
         public Exception Error;
         public bool IsCompleted => ResultType == TweenResultType.Completed;
 

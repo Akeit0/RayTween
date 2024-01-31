@@ -17,9 +17,9 @@ namespace RayTween
         where TValue : unmanaged  where TPlugin : unmanaged, ITweenPlugin<TValue>
     {
         [NativeDisableUnsafePtrRestriction] public TweenData<TValue, TPlugin>* DataPtr;
-        [ReadOnly] public double Time;
-        [ReadOnly] public double UnscaledTime;
-        [ReadOnly] public double Realtime;
+        [ReadOnly] public double DeltaTime;
+        [ReadOnly] public double UnscaledDeltaTime;
+        [ReadOnly] public double RealDeltaTime;
 
         [WriteOnly] public NativeList<int>.ParallelWriter CompletedIndexList;
         [WriteOnly] public NativeArray<TValue> Output;
@@ -30,15 +30,15 @@ namespace RayTween
 
             if (Hint.Likely(data.Status is TweenStatus.Scheduled or TweenStatus.Delayed or TweenStatus.Playing))
             {
-                var currentTime = data.TimeKind switch
+                var deltaTime = data.TimeKind switch
                 {
-                    TweenTimeKind.Time => Time,
-                    TweenTimeKind.UnscaledTime => UnscaledTime,
-                    TweenTimeKind.Realtime => Realtime,
+                    TweenTimeKind.Time => DeltaTime,
+                    TweenTimeKind.UnscaledTime => UnscaledDeltaTime,
+                    TweenTimeKind.Realtime => RealDeltaTime,
                     _ => default
                 };
 
-                var tweenTime = currentTime - data.StartTime;
+                var tweenTime =    data.Time = math.max(data.Time + deltaTime * data.TweenSpeed, 0.0);
 
                 double t;
                 bool isCompleted;

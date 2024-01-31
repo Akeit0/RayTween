@@ -5,16 +5,60 @@ namespace RayTween
 {
     public static class TweenHandleExtensions
     {
-        public static TweenHandle<TValue, TPlugin> SetLink<TValue, TPlugin>(this TweenHandle<TValue, TPlugin> handle,GameObject gameObject) where TValue : unmanaged
-            where TPlugin : unmanaged, ITweenPlugin<TValue>
+        public static TweenHandle SetLink(this TweenHandle handle,GameObject gameObject,bool cancelOnDisable=false) 
+          
         {
-            GetOrAddComponent  <TweenHandleLinker>(gameObject).Register(handle.AsNoType());
+
+            if (cancelOnDisable)
+            {
+                LinkValidator.RegisterIsActiveInHierarchy(gameObject,handle);
+            }
+            else
+            {
+                LinkValidator.Register(gameObject,handle);
+            }
+        
+            //GetOrAddComponent  <TweenHandleLinker>(gameObject).Register(handle.AsNoType());
             return handle;
         }
-        public static TweenHandle<TValue, TPlugin> SetLink<TValue, TPlugin>(this TweenHandle<TValue, TPlugin> handle,Component component) where TValue : unmanaged
+        public static TweenHandle SetLink(this TweenHandle handle,Component component,bool cancelOnDisable=false ) 
+        {
+            if (component is Behaviour behaviour)
+            {
+                return handle.SetLink(behaviour,cancelOnDisable);
+            }
+            return handle.SetLink(component.gameObject,cancelOnDisable);
+        }
+        public static TweenHandle SetLink(this TweenHandle handle,Behaviour behaviour,bool cancelOnDisable=false) 
+        {
+            if (cancelOnDisable)
+            {
+                LinkValidator.RegisterIsActiveAndEnabled(behaviour,handle);
+            }
+            else
+            {
+                LinkValidator.Register(behaviour,handle);
+            }
+            return handle;
+        }
+        
+        public static TweenHandle<TValue, TPlugin> SetLink<TValue, TPlugin>(this TweenHandle<TValue, TPlugin> handle,GameObject gameObject,bool cancelOnDisable=false) where TValue : unmanaged
             where TPlugin : unmanaged, ITweenPlugin<TValue>
         {
-            GetOrAddComponent  <TweenHandleLinker>(component.gameObject).Register(handle.AsNoType());
+
+            handle.AsNoType().SetLink(gameObject, cancelOnDisable);
+            return handle;
+        }
+        public static TweenHandle<TValue, TPlugin> SetLink<TValue, TPlugin>(this TweenHandle<TValue, TPlugin> handle,Component component,bool cancelOnDisable=false ) where TValue : unmanaged
+            where TPlugin : unmanaged, ITweenPlugin<TValue>
+        {
+            handle.AsNoType().SetLink(component, cancelOnDisable);
+            return handle;
+        }
+        public static TweenHandle<TValue, TPlugin> SetLink<TValue, TPlugin>(this TweenHandle<TValue, TPlugin> handle,Behaviour behaviour,bool cancelOnDisable=false) where TValue : unmanaged
+            where TPlugin : unmanaged, ITweenPlugin<TValue>
+        {
+            handle.AsNoType().SetLink(behaviour, cancelOnDisable);
             return handle;
         }
         static TComponent GetOrAddComponent<TComponent>(GameObject target) where TComponent : Component
@@ -41,12 +85,6 @@ namespace RayTween
             {
                 Debug.LogWarning("Cannot set relative mode after the tween has scheduled.");
             }
-            return handle;
-        }
-        
-        public static TweenHandle<TValue, TPlugin> From<TValue, TPlugin>(this TweenHandle<TValue, TPlugin> handle,TValue options) where TValue : unmanaged
-            where TPlugin : unmanaged, ITweenPlugin<TValue>
-        {
             return handle;
         }
         

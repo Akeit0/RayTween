@@ -11,7 +11,6 @@ namespace RayTween.Editor
             where TValue : unmanaged
         where TPlugin : unmanaged, ITweenPlugin<TValue>
         {
-            data.StartTime = Time;
             return EditorTweenDispatcher.Schedule<TValue, TPlugin>(handle, data, callbackData);
         }
     }

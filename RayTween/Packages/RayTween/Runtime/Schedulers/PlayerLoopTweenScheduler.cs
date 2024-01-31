@@ -60,7 +60,6 @@ namespace RayTween
         {
             
             data.TimeKind = timeKind;
-            data.StartTime = Time;
 #if UNITY_EDITOR
             if (EditorApplication.isPlaying)
             {

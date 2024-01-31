@@ -46,7 +46,8 @@ namespace RayTween
         public static readonly RelativeModeApplier<TValue> RelativeModeApplier;
 
         public TweenStatus Status;
-        public double StartTime;
+        public double Time;
+        public float TweenSpeed;
         public float Duration;
         public Ease Ease;
         public TweenTimeKind TimeKind;

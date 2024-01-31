@@ -153,10 +153,27 @@ namespace RayTween.Internal
             ValidCheckWithThrow(handle, out var storageIndex, out var denseIndex);
             storageList[storageIndex].Cancel(denseIndex);
         }
+        public static bool TryCancelTween(TweenHandle handle)
+        {
+            if (handle.TryGetBuffer(out var buffer))
+            {
+                buffer.CallbackData.InvokeAndDispose(TweenResult.Canceled);
+                return true;
+            }
+            if( ValidCheck(handle, out var storageIndex, out var denseIndex))
+            {
+                storageList[storageIndex].Cancel(denseIndex);
+                return true;
+            }
+
+            return false;
+        }
+
 
         public static bool ValidCheck(TweenHandle handle, out int denseId)
         {
             denseId = 0;
+            if(handle.Version<=0)return false;
             if (handle.Index < 0 || handle.Index >= entries.Length)
             {
                 return false;
@@ -164,7 +181,7 @@ namespace RayTween.Internal
 
             var entry = entries[handle.Index];
             var version = entry.Version;
-            if (version <= 0 || version != handle.Version)
+            if (version != handle.Version)
             {
                 return false;
             }
@@ -177,6 +194,7 @@ namespace RayTween.Internal
         {
             denseIndex = 0;
             storageIndex = 0;
+            if(handle.Version<=0)return false;
             if (handle.Index < 0 || handle.Index >= entries.Length)
             {
                 return false;
@@ -184,7 +202,7 @@ namespace RayTween.Internal
 
             var entry = entries[handle.Index];
             var version = entry.Version;
-            if (version <= 0 || version != handle.Version)
+            if (version != handle.Version)
             {
                 return false;
             }
@@ -208,7 +226,7 @@ namespace RayTween.Internal
 
             var entry = entries[handle.Index];
             var version = entry.Version;
-            if (version < 0 || version != handle.Version)
+            if (version <= 0 || version != handle.Version)
             {
                 throw new ArgumentException("Tween has been destroyed or no longer exists.");
             }

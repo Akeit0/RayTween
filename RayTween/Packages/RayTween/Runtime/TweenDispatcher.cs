@@ -14,7 +14,7 @@ namespace RayTween
     /// </summary>
     public static class TweenDispatcher
     {
-        internal static Action<UpdateTiming> OnUpdateAction;
+        public static Action<UpdateTiming> OnUpdateAction;
 
         static class StorageCache<TValue, TPlugin>
             where TValue : unmanaged
@@ -94,7 +94,15 @@ namespace RayTween
             {
                 if (runner == null)
                 {
-                    runner = new UpdateRunner<TValue, TPlugin>(storage);
+                    
+                    if (updateTiming == UpdateTiming.FixedUpdate)
+                    {
+                        runner = new UpdateRunner<TValue, TPlugin>(storage, Time.fixedTimeAsDouble, Time.fixedUnscaledTimeAsDouble, Time.realtimeSinceStartupAsDouble);
+                    }
+                    else
+                    {
+                        runner = new UpdateRunner<TValue, TPlugin>(storage, Time.timeAsDouble, Time.unscaledTimeAsDouble, Time.realtimeSinceStartupAsDouble);
+                    }
                     GetRunnerList(updateTiming).Add(runner);
                     return (runner, true);
                 }
@@ -284,7 +292,8 @@ namespace RayTween
             {
                 if (updateRunner == null)
                 {
-                    updateRunner = new UpdateRunner<TValue, TPlugin>(storage);
+                    var time = EditorApplication.timeSinceStartup;
+                    updateRunner = new UpdateRunner<TValue, TPlugin>(storage,time,time,time);
                     updateRunners.Add(updateRunner);
                 }
             }
@@ -312,6 +321,7 @@ namespace RayTween
         }
 
         static bool isInitialized;
+        static int editorFrame=0;
 
         [InitializeOnLoadMethod]
         static void Init()
@@ -358,6 +368,11 @@ namespace RayTween
 
         static void Update()
         {
+            if (EditorApplication.isPlayingOrWillChangePlaymode||EditorApplication.isCompiling)
+            {
+                return;
+            }
+            
             if (!EditorApplication.isPlaying)
             {
                 for (int i = 0; i < (int)(UpdateTiming.EditorUpdate+1); i++)
@@ -370,7 +385,7 @@ namespace RayTween
             {
                 TweenDispatcher.OnUpdateAction?.Invoke(UpdateTiming.EditorUpdate);
             }
-
+           LinkValidator.Update(editorFrame++);
             var span = updateRunners.AsSpan();
             foreach (var t in span)
             {
