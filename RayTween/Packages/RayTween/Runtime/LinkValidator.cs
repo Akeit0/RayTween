@@ -1,40 +1,39 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
 using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine;
 using RayTween.Internal;
-using Unity.Profiling;
-using UnityEngine.Profiling;
 using Object = UnityEngine.Object;
 
 namespace RayTween
 {
     public static class LinkValidator
     {
-        static Dictionary<(object, Func<object, bool>), HandleList> dictionary = new(16);
-        static MinimumList<(object, Func<object, bool>)> tmpList = new(16);
+        static readonly Dictionary<(object, Func<object, bool>), HandleList> dictionary = new(16);
+        static readonly MinimumList<(object, Func<object, bool>)> tmpList = new();
 
-        static MinimumList<HandleList> activeNodes =
-            new(16);
+        static readonly MinimumList<HandleList> activeNodes =
+            new();
 
-        static Dictionary<CancellationToken, HandleList> tokenDict = new(16);
-        
-        
-        static readonly Func<Object, bool> IsNotNullFunc = (m) => (m != null);
-        static Func<Behaviour, bool> IsActiveFunc = (m) => (m != null)&&m.isActiveAndEnabled;
-        
-        static Func<GameObject, bool> IsActiveInHierarchyFunc = (m) => (m != null)&&m.activeInHierarchy;
 
-        public static void Register(Object o, TweenHandle handle) => Register(o, IsNotNullFunc, handle);
-        public static void RegisterIsActiveAndEnabled(Behaviour o, TweenHandle handle) => Register(o, IsActiveFunc, handle);
+        static readonly Func<Object, bool> isNotNullFunc = (m) => (m != null);
+        static readonly Func<Behaviour, bool> isActiveAndEnabledFunc = (m) => (m != null)&&m.isActiveAndEnabled;
         
-        public static void RegisterIsActiveInHierarchy(GameObject o, TweenHandle handle) => Register(o, IsActiveInHierarchyFunc, handle);
-        public static void RegisterIsActiveInHierarchy(Component o, TweenHandle handle) => Register(o.gameObject, IsActiveInHierarchyFunc, handle);
+        static readonly Func<Behaviour, bool> isEnabledFunc = (m) => (m != null)&&m.enabled;
+        
+        static readonly Func<GameObject, bool> isActiveInHierarchyFunc = (m) => (m != null)&&m.activeInHierarchy;
+
+        public static void Register(Object o, TweenHandle handle) => Register(o, isNotNullFunc, handle);
+        public static void RegisterIsActiveAndEnabled(Behaviour o, TweenHandle handle) => Register(o, isActiveAndEnabledFunc, handle);
+        
+        public static void RegisterEnabled(Behaviour o, TweenHandle handle) => Register(o, isEnabledFunc, handle);
+        
+        public static void RegisterIsActiveInHierarchy(GameObject o, TweenHandle handle) => Register(o, isActiveInHierarchyFunc, handle);
+        public static void RegisterIsActiveInHierarchy(Component o, TweenHandle handle) => Register(o.gameObject, isActiveInHierarchyFunc, handle);
         
         public static void Register<T>(T state, Func<T, bool> validateFunc, TweenHandle handle) where T : class
         {
-            if (IsRunning)
+            if (isRunning)
             {
                 throw new InvalidOperationException();
             }
@@ -57,15 +56,12 @@ namespace RayTween
             }
         }
 
-        //static readonly ProfilerMarker linkValidatorMarker = new ProfilerMarker("LinkValidator");
-
-        // static readonly ProfilerMarker linkValidatorCustomFuncMarker = new ProfilerMarker("LinkValidatorCustomFunc");
         static int lastFrame;
-        static bool IsRunning;
+        static bool isRunning;
         internal static void Update(int frame)
         {
             if (lastFrame == frame) return;
-            IsRunning = true;
+            isRunning = true;
             lastFrame = frame;
             //  linkValidatorMarker.Begin();
 
@@ -134,7 +130,7 @@ namespace RayTween
             }
             finally
             {
-                IsRunning = false;
+                isRunning = false;
             }
             // linkValidatorMarker.End();
         }

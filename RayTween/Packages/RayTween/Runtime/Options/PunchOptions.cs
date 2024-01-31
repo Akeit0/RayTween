@@ -27,7 +27,7 @@ namespace RayTween
             return other.Frequency == Frequency && other.DampingRatio == DampingRatio;
         }
 
-        public override readonly bool Equals(object obj)
+        public readonly override bool Equals(object obj)
         {
             if (obj is PunchOptions options) return Equals(options);
             return false;

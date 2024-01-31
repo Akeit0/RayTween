@@ -1,3 +1,5 @@
+using System;
+
 namespace RayTween
 {
     /// <summary>
@@ -39,12 +41,28 @@ namespace RayTween
     /// <summary>
     /// Options for string type tween.
     /// </summary>
-    public unsafe struct StringOptions 
+    public  struct StringOptions :IEquatable<StringOptions>
     {
         public string CustomScrambleChars;
         public Unity.Mathematics.Random RandomState;
         public ScrambleMode ScrambleMode;
         public bool RichTextEnabled;
+        
+
+        public bool Equals(StringOptions other)
+        {
+            return CustomScrambleChars == other.CustomScrambleChars && RandomState.Equals(other.RandomState) && ScrambleMode == other.ScrambleMode && RichTextEnabled == other.RichTextEnabled;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is StringOptions other && Equals(other);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(CustomScrambleChars, RandomState, (int)ScrambleMode, RichTextEnabled);
+        }
     }
     
 }

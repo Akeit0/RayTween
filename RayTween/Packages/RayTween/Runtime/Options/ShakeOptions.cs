@@ -30,13 +30,13 @@ namespace RayTween
                 other.RandomState.state == RandomState.state;
         }
 
-        public override readonly bool Equals(object obj)
+        public readonly override bool Equals(object obj)
         {
             if (obj is ShakeOptions options) return Equals(options);
             return false;
         }
 
-        public override readonly int GetHashCode()
+        public readonly override int GetHashCode()
         {
             return HashCode.Combine(Frequency, DampingRatio, RandomState);
         }

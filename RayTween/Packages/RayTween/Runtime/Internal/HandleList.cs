@@ -1,7 +1,5 @@
 ﻿using System;
-using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 namespace RayTween.Internal
 {
@@ -13,14 +11,14 @@ namespace RayTween.Internal
         HandleList lastOrHeadNode;
         HandleList prev;
         HandleList nextNode;
-        public Handle8 Values;
-        public bool IsHead => prev == null;
+         Handle8 values;
+         bool IsHead => prev == null;
 
         public bool HasNext => nextNode == null;
 
-        public ref TweenHandle this[int index] => ref Values.GetSpan()[index];
+        public ref TweenHandle this[int index] => ref values.GetSpan()[index];
 
-        public int Length => Values.Length;
+        int Length => values.Length;
 
         HandleList GetLast() => IsHead ? lastOrHeadNode : lastOrHeadNode.lastOrHeadNode;
 
@@ -59,7 +57,7 @@ namespace RayTween.Internal
            
            
             result.prev = prev;
-            result.Values = default;
+            result.values = default;
             result.nextNode = null;
             result.lastOrHeadNode = result;
             
@@ -78,11 +76,11 @@ namespace RayTween.Internal
                 var next = this;
                 while (next!=null)
                 {
-                    foreach (var handle in next.Values.GetSpan())
+                    foreach (var handle in next.values.GetSpan())
                     {
                         handle.TryCancel();
                     }
-                    next.Values=default;
+                    next.values=default;
                     next.prev = next;
                     next = next.nextNode;
                     poolCount++;
@@ -98,9 +96,9 @@ namespace RayTween.Internal
         {
             
             var last = GetLast();
-            if (last.Values.Length < 8)
+            if (last.values.Length < 8)
             {
-                last.Values.Add(handle);
+                last.values.Add(handle);
                 newList = default;
                 return false;
             }
@@ -108,7 +106,7 @@ namespace RayTween.Internal
             {
                 var newLast = CreateOrGet(last);
                 SetLast(newLast);
-                newLast.Values.Add(handle);
+                newLast.values.Add(handle);
                 newList = newLast;
                 return true;
             }
@@ -121,16 +119,16 @@ namespace RayTween.Internal
             var last = GetLast();
             if (last == this)
             {
-                var span = Values.GetSpan();
+                var span = values.GetSpan();
                 
-                for (int i = 0; i < Values.Length; i++)
+                for (int i = 0; i < values.Length; i++)
                 {
                     ref var handle = ref span[i];
                     if (!handle.IsActive())
                     {
-                        Values.Length--;
-                        handle = span[Values.Length];
-                        span[Values.Length] = default;
+                        values.Length--;
+                        handle = span[values.Length];
+                        span[values.Length] = default;
                         i--;
                         // Debug.Log("Compress");
                     }
@@ -140,17 +138,17 @@ namespace RayTween.Internal
             }
             else
             {
-                if (last.Values.Length <= 0)
+                if (last.values.Length <= 0)
                 {
                     return ;
                 }
-                var span = Values.GetSpan();
-                for (int i = 0; i < Values.Length; i++)
+                var span = values.GetSpan();
+                for (int i = 0; i < values.Length; i++)
                 {
                     ref var handle = ref span[i];
                     if (!handle.IsActive())
                     {
-                        handle = last.Values.RemoveLast();
+                        handle = last.values.RemoveLast();
                         if (last.Length == 0)
                         {
                             return ;
@@ -185,16 +183,16 @@ namespace RayTween.Internal
             var last = GetLast();
             if (last == this)
             {
-                var span = Values.GetSpan();
+                var span = values.GetSpan();
                 
-                for (int i = 0; i < Values.Length; i++)
+                for (int i = 0; i < values.Length; i++)
                 {
                     ref var handle = ref span[i];
                     if (!handle.IsActive())
                     {
-                        Values.Length--;
-                        handle = span[Values.Length];
-                        span[Values.Length] = default;
+                        values.Length--;
+                        handle = span[values.Length];
+                        span[values.Length] = default;
                         i--;
                        // Debug.Log("Compress");
                     }
@@ -204,20 +202,20 @@ namespace RayTween.Internal
             }
             else
             {
-                if (last.Values.Length <= 0)
+                if (last.values.Length <= 0)
                 {
                     return false;
                 }
-                var span = Values.GetSpan();
-                for (int i = 0; i < Values.Length; i++)
+                var span = values.GetSpan();
+                for (int i = 0; i < values.Length; i++)
                 {
                     ref var handle = ref span[i];
                     if (!handle.IsActive())
                     {
-                        handle = last.Values.RemoveLast();
+                        handle = last.values.RemoveLast();
                         if (last.Length == 0)
                         {
-                            (Values, last.Values) = (last.Values, Values);
+                            (values, last.values) = (last.values, values);
                             
                           break;
                         }
@@ -225,7 +223,7 @@ namespace RayTween.Internal
                     }
                 }
             }
-            if (Values.Length == 0)
+            if (values.Length == 0)
             {
                 prev.nextNode = nextNode;
                 prev = this;
@@ -239,10 +237,10 @@ namespace RayTween.Internal
         }
       
 
-        public unsafe struct Handle8
+        unsafe struct Handle8
         {
             fixed int array[24];
-            public ref int GetPinnableReference() => ref array[0];
+            ref int GetPinnableReference() => ref array[0];
             public int Length;
 
             public Span<TweenHandle> GetSpan()

@@ -44,6 +44,10 @@ namespace Scenes
             
         }
 
+        void Start()
+        {
+        }
+
         [Button]
         void TMPCharMotionExample()
         {
@@ -54,11 +58,11 @@ namespace Scenes
             for (int i = 0; i < text.textInfo.characterCount; i++)
             {
               RTween.Create(Color.white, Color.red, 1f).BindToTMPCharColor(text, i)
-                    .SetDelay(i * 0.1f).SetLink(gameObject,true);
+                    .SetDelay(i * 0.1f).SetLink(this,true);
 
                RTween.Punch.Create(Vector3.zero, Vector3.up * 15f, 1f).BindToTMPCharPosition(text, i)
                     .SetDelay(i * 0.1f)
-                    .SetEase(Ease.OutQuad) .SetEase(Ease.OutQuad).SetLink(gameObject,true);
+                    .SetEase(Ease.OutQuad) .SetEase(Ease.OutQuad).SetLink(this,true);
             }
         }
         [Button]
@@ -83,6 +87,7 @@ namespace Scenes
         [Button]
         async UniTaskVoid Circle(int count)
         {
+           
             // using PreservedTween<Vector3, Path3DTweenPlugin> p = RTween.CreatePath3D(3f).BindToPosition(transform)
             //     .WithPath(
             //         Path.AsSpan()).SetOptions(new PathTweenOptions(PathType.CatmullRom, true)).SetEase(Ease.OutSine)

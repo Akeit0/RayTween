@@ -17,8 +17,6 @@ namespace RayTween
             {
                 LinkValidator.Register(gameObject,handle);
             }
-        
-            //GetOrAddComponent  <TweenHandleLinker>(gameObject).Register(handle.AsNoType());
             return handle;
         }
         public static TweenHandle SetLink(this TweenHandle handle,Component component,bool cancelOnDisable=false ) 
@@ -33,7 +31,7 @@ namespace RayTween
         {
             if (cancelOnDisable)
             {
-                LinkValidator.RegisterIsActiveAndEnabled(behaviour,handle);
+                LinkValidator.RegisterEnabled(behaviour,handle);
             }
             else
             {

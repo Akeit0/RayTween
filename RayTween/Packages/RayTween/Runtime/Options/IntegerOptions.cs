@@ -14,7 +14,7 @@ namespace RayTween
             return other.RoundingMode == RoundingMode;
         }
 
-        public override readonly bool Equals(object obj)
+        public readonly override bool Equals(object obj)
         {
             if (obj is IntegerOptions integerOptions) return Equals(integerOptions);
             return false;
