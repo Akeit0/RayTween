@@ -31,7 +31,7 @@ namespace RayTween
         {
             if (cancelOnDisable)
             {
-                LinkValidator.RegisterEnabled(behaviour,handle);
+                LinkValidator.RegisterIsActiveAndEnabled(behaviour,handle);
             }
             else
             {

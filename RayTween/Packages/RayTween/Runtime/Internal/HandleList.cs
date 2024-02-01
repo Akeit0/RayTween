@@ -23,25 +23,7 @@ namespace RayTween.Internal
 
         HandleList GetLast() => IsHead ? lastOrHeadNode : lastOrHeadNode.lastOrHeadNode;
 
-        void SetLast(HandleList newLast)
-        {
-            if (prev == null)
-            {
-                var last = lastOrHeadNode;
-                last.nextNode = newLast;
-                newLast.prev = last;
-                lastOrHeadNode = newLast;
-                newLast.lastOrHeadNode = this;
-            }
-            else
-            {
-                var last = lastOrHeadNode.lastOrHeadNode;
-                last.nextNode = newLast;
-                newLast.prev = last;
-                newLast.lastOrHeadNode = lastOrHeadNode;
-                lastOrHeadNode.lastOrHeadNode = newLast;
-            }
-        }
+       
         public static HandleList CreateOrGet(HandleList prev)
         {
             var result = pool;
@@ -132,11 +114,12 @@ namespace RayTween.Internal
                     newList = default;
                     return false;
                 }
-                var newLast = CreateOrGet(last);
-                SetLast(newLast);
-                newLast.values.Add(handle);
-                newLast.values.Add(values.RemoveLast());
-                newList = newLast;
+                newList = CreateOrGet(last);
+                newList.prev = lastOrHeadNode;
+                lastOrHeadNode.nextNode = newList;
+                lastOrHeadNode = newList;
+                newList.values.Add(handle);
+                newList.values.Add(values.RemoveLast());
                 return true;
             }
         }
