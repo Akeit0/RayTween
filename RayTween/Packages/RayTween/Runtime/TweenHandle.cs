@@ -99,23 +99,28 @@ namespace RayTween
         }
     }
 
-    public struct TweenHandle
+    public readonly struct TweenHandle
     {
         /// <summary>
         /// The ID of Type.
         /// </summary>
-        public int TypeId;
+        public readonly int TypeId;
 
         /// <summary>
         /// The ID of tween entity.
         /// </summary>
-        public int Index;
+        public readonly int Index;
 
         /// <summary>
         /// The shared version of tween entity.
         /// </summary>
-        public int Version;
-
+        public readonly int Version;
+        public TweenHandle(int typeId, int index, int version)
+        {
+            TypeId = typeId;
+            Index = index;
+            Version = version;
+        }
         public readonly bool Equals(TweenHandle other)
         {
             return Index == other.Index && Version == other.Version;
@@ -182,19 +187,19 @@ namespace RayTween
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool IsActive()
+        public readonly bool IsActive()
         {
             return Version >= 1 && TweenStorageManager.IsActive(this);
         }
 
-        public void Complete() => TweenStorageManager.CompleteTween(this);
+        public readonly void Complete() => TweenStorageManager.CompleteTween(this);
 
-        public void Cancel() => TweenStorageManager.CancelTween(this);
-        public bool TryCancel() => TweenStorageManager.TryCancelTween(this);
+        public readonly void Cancel() => TweenStorageManager.CancelTween(this);
+        public readonly bool TryCancel() => TweenStorageManager.TryCancelTween(this);
     }
 
 
-    public struct TweenHandle<TValue, TPlugin> where TValue : unmanaged
+    public readonly struct TweenHandle<TValue, TPlugin> where TValue : unmanaged
         where TPlugin : unmanaged, ITweenPlugin<TValue>
     {
         internal static readonly TweenDataBuffer<TValue, TPlugin> Buffer = TweenDataBuffer<TValue, TPlugin>.Instance;
@@ -203,7 +208,7 @@ namespace RayTween
         {
             TweenDispatcher.OnUpdateAction += Buffer.ScheduleIfMatchTiming;
         }
-
+       
         public static int TypeId => Buffer.TypeId;
 
 
@@ -228,12 +233,12 @@ namespace RayTween
         /// <summary>
         /// The ID of tween entity.
         /// </summary>
-        public int Index;
+        public readonly int Index;
 
         /// <summary>
         /// The shared version of tween entity.
         /// </summary>
-        public int Version;
+        public readonly int Version;
 
         internal TweenHandle(int index, int version)
         {
@@ -267,8 +272,7 @@ namespace RayTween
             var buffer = Buffer;
             buffer.InitFromTo(start, end, duration, relativeMode);
             buffer.Set((entryIndex, version));
-            return new TweenHandle<TValue, TPlugin>()
-                { Index = entryIndex, Version = version };
+            return new TweenHandle<TValue, TPlugin>(entryIndex, version);
         }
 
         public static TweenHandle<TValue, TPlugin> Create(Action<TValue> action, TValue start, TValue end,
@@ -279,8 +283,7 @@ namespace RayTween
             Buffer.InitFromTo(start, end, duration, relativeMode);
             Buffer.Set((entryIndex, version));
             Buffer.CallbackData.UpdateAction = action;
-            return new TweenHandle<TValue, TPlugin>()
-                { Index = entryIndex, Version = version };
+            return new TweenHandle<TValue, TPlugin>(entryIndex, version);
         }
 
         public static TweenHandle<TValue, TPlugin> Create<TTarget>(TTarget target, Action<TTarget, TValue> action,
@@ -294,8 +297,7 @@ namespace RayTween
             Buffer.CallbackData.Target1 = target;
             Buffer.CallbackData.UpdateAction = action;
             Buffer.Set((entryIndex, version));
-            return new TweenHandle<TValue, TPlugin>()
-                { Index = entryIndex, Version = version };
+            return new TweenHandle<TValue, TPlugin>(entryIndex, version);
         }
 
         public static TweenHandle<TValue, TPlugin> Create<TTarget1, TTarget2>(TTarget1 target1, TTarget2 target2,
@@ -311,8 +313,7 @@ namespace RayTween
             Buffer.CallbackData.UpdateAction = action;
 
             Buffer.Set((entryIndex, version));
-            return new TweenHandle<TValue, TPlugin>()
-                { Index = entryIndex, Version = version };
+            return new TweenHandle<TValue, TPlugin>(entryIndex, version);
         }
 
 
@@ -451,7 +452,7 @@ namespace RayTween
 
         public TweenHandle AsNoType()
         {
-            return new TweenHandle() { TypeId = TypeId, Index = Index, Version = Version };
+            return new TweenHandle(TypeId,Index,Version) ;
         }
 
         public void Forget()

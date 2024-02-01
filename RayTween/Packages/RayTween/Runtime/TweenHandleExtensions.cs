@@ -1,4 +1,8 @@
-﻿using RayTween.Internal;
+﻿using System;
+using System.Collections;
+using System.Threading;
+using System.Threading.Tasks;
+using RayTween.Internal;
 using UnityEngine;
 
 namespace RayTween
@@ -85,7 +89,83 @@ namespace RayTween
             }
             return handle;
         }
-        
-        
+        /// <summary>
+        /// Convert TweenHandle to IDisposable.
+        /// </summary>
+        /// <param name="handle">This tween handle</param>
+        /// <returns></returns>
+        public static IDisposable ToDisposable<TValue,  TPlugin>(this TweenHandle<TValue,  TPlugin> handle)where TValue : unmanaged
+            where TPlugin : unmanaged, IRelativeTweenPlugin<TValue>
+        {
+            return new TweenHandleDisposable(handle.AsNoType());
+        }
+        /// <summary>
+        /// Convert TweenHandle to IDisposable.
+        /// </summary>
+        /// <param name="handle">This tween handle</param>
+        /// <returns></returns>
+        public static IDisposable ToDisposable(this TweenHandle handle)
+        {
+            return new TweenHandleDisposable(handle);
+        }
+        /// <summary>
+        /// Wait for the tween to finish in a coroutine.
+        /// </summary>
+        /// <param name="handle">This tween handle</param>
+        /// <returns></returns>
+        public static IEnumerator ToYieldInteraction<TValue,  TPlugin>(this TweenHandle<TValue,  TPlugin> handle)where TValue : unmanaged
+            where TPlugin : unmanaged, IRelativeTweenPlugin<TValue>
+        {
+            while (handle.IsActive())
+            {
+                yield return null;
+            }
+        }
+        /// <summary>
+        /// Wait for the tween to finish in a coroutine.
+        /// </summary>
+        /// <param name="handle">This tween handle</param>
+        /// <returns></returns>
+        public static IEnumerator ToYieldInteraction(this TweenHandle handle)
+        {
+            while (handle.IsActive())
+            {
+                yield return null;
+            }
+        }
+        public static ValueTask ToValueTask<TValue,  TPlugin>(this TweenHandle<TValue,  TPlugin> handle, CancellationToken cancellationToken = default)where TValue : unmanaged
+            where TPlugin : unmanaged, IRelativeTweenPlugin<TValue>
+        {
+            if (!handle.IsActive()) return default;
+            var source = ValueTaskTweenConfiguredSource.Create(handle.AsNoType(), cancellationToken, out var token);
+            return new ValueTask(source, token);
+        }
+        public static ValueTask ToValueTask(this TweenHandle handle, CancellationToken cancellationToken = default)
+        {
+            if (!handle.IsActive()) return default;
+            var source = ValueTaskTweenConfiguredSource.Create(handle, cancellationToken, out var token);
+            return new ValueTask(source, token);
+        }
+
+#if UNITY_2023_1_OR_NEWER
+        public static Awaitable ToAwaitable(this TweenHandle handle, CancellationToken cancellationToken = default)
+        {
+            if (!handle.IsActive()) return AwaitableTweenConfiguredSource.CompletedSource.Awaitable;
+            return AwaitableTweenConfiguredSource.Create(handle, cancellationToken).Awaitable;
+        }
+#endif
+
     }
+
+    internal sealed class TweenHandleDisposable : IDisposable
+    {
+        public TweenHandleDisposable(TweenHandle handle) => this.handle = handle;
+        readonly TweenHandle handle;
+
+        public void Dispose()
+        {
+            if (handle.IsActive()) handle.Cancel();
+        }
+    }
+    
 }
