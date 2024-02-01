@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine;
 using RayTween.Internal;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+using UnityEngine.Profiling;
 using Object = UnityEngine.Object;
 
 namespace RayTween
@@ -14,7 +18,6 @@ namespace RayTween
 
         static readonly MinimumList<HandleList> activeNodes =
             new();
-
 
         static readonly Func<Object, bool> isNotNullFunc = (m) => (m != null);
         static readonly Func<Behaviour, bool> isActiveAndEnabledFunc = (m) => (m != null)&&m.isActiveAndEnabled;
@@ -30,26 +33,32 @@ namespace RayTween
         
         public static void RegisterIsActiveInHierarchy(GameObject o, TweenHandle handle) => Register(o, isActiveInHierarchyFunc, handle);
         public static void RegisterIsActiveInHierarchy(Component o, TweenHandle handle) => Register(o.gameObject, isActiveInHierarchyFunc, handle);
-        
+
+
+        public static int PoolCount => HandleList.PoolCount;
         public static void Register<T>(T state, Func<T, bool> validateFunc, TweenHandle handle) where T : class
         {
+           // Debug.Log("Register");
+            //return;
             if (isRunning)
             {
-                throw new InvalidOperationException();
+                Debug.Log("Update is Running");
+                return;
             }
             
             var func2 = UnsafeUtility.As<Func<T, bool>, Func<object, bool>>(ref validateFunc);
             if (dictionary.TryGetValue((state, func2), out var list))
             {
-                list.CompressList();
                 if (list.Add(handle, out var newList))
                 {
-                    //Debug.Log("NewList");
                     activeNodes.Add(newList);
+                   // Debug.Log("Add");
                 }
+               
             }
             else
             {
+               // Debug.Log("Register");
                 list = HandleList.CreateOrGet(null);
                 list.Add(handle, out _);
                 dictionary.Add((state, func2), list);
@@ -60,27 +69,42 @@ namespace RayTween
         static bool isRunning;
         internal static void Update(int frame)
         {
+            //return;
             if (lastFrame == frame) return;
-            isRunning = true;
-            lastFrame = frame;
+
             //  linkValidatorMarker.Begin();
 
             try
             {
+#if UNITY_EDITOR
+                if(EditorApplication.isCompiling|| (!EditorApplication.isPlaying&&EditorApplication.isPlayingOrWillChangePlaymode))return;
+#endif
+                isRunning = true;
+                lastFrame = frame;
+                
                 tmpList.Clear();
+           
                 // linkValidatorCustomFuncMarker.Begin();
+                
                 var total = 0;
                 foreach (var (key, value) in dictionary)
                 {
+                    
                     total++;
-                    if (1000000 < total)
-                    {
-                        throw new InvalidOperationException("Infinite");
-                    }
-
+                    // if (1000 < total)
+                    // {
+                    //     //throw new InvalidOperationException("Infinite");
+                    //     return;
+                    // }
+                    //continue;
                     try
                     {
-                        if (key.Item2(key.Item1)) continue;
+                        if (key.Item2(key.Item1))
+                        {
+                            continue;
+                        }
+                        Debug.Log("Release");
+                        //continue;
                     }
                     catch (Exception e)
                     {
@@ -96,32 +120,36 @@ namespace RayTween
                 {
                     dictionary.Remove(key);
                 }
-
+                //return;
                 //  linkValidatorCustomFuncMarker.End();
-                var activeList = activeNodes;
-                var c = frame & 7;
+                
 
-                for (int i = 0; i < activeList.Length; i++)
-                {
-                    total++;
-                    if (1000000 < total)
-                    {
-                        throw new InvalidOperationException("Infinite");
-                    }
-                    
-                    var list = activeList[i];
-                    if (list.IsPooled)
-                    {
-                        activeList.RemoveAtSwapBack(i);
-
-                        i--;
-                    }
-
-                    else if ((i & 7) == c && list.Compress())
-                    {
-                        activeList.RemoveAtSwapBack(i);
-                        i--;
-                    }
+               
+                 var activeList = activeNodes;
+                 var c = frame & 7;
+                 for (int i = 0; i < activeList.Length; i++)
+                 {
+                     total++;
+                     if (10000 < total)
+                     {
+                         throw new InvalidOperationException("Infinite");
+                     }
+                     
+                     var list = activeList[i];
+                     
+                     if (list.IsPooled)
+                     {
+                         activeList.RemoveAtSwapBack(i);
+               
+                         i--;
+                     }
+               
+                     else if ((i & 7) == c && list.Compress())
+                     {
+                         //Debug.Log("Compress");
+                         activeList.RemoveAtSwapBack(i);
+                         i--;
+                     }
                 }
             }
             catch (Exception e)

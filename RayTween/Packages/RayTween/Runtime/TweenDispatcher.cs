@@ -368,11 +368,11 @@ namespace RayTween
 
         static void Update()
         {
-            if (EditorApplication.isPlayingOrWillChangePlaymode||EditorApplication.isCompiling)
-            {
-                return;
-            }
-            
+            // if (EditorApplication.isPlayingOrWillChangePlaymode||EditorApplication.isCompiling)
+            // {
+            //     return;
+            // }
+            //
             if (!EditorApplication.isPlaying)
             {
                 for (int i = 0; i < (int)(UpdateTiming.EditorUpdate+1); i++)

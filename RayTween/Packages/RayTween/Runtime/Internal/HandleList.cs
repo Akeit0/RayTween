@@ -13,6 +13,7 @@ namespace RayTween.Internal
         HandleList nextNode;
          Handle8 values;
          bool IsHead => prev == null;
+         public int LocalLength => values.Length;
 
         public bool HasNext => nextNode == null;
 
@@ -74,16 +75,33 @@ namespace RayTween.Internal
             {
 
                 var next = this;
-                while (next!=null)
+                var total = 0;
+                do
+                {
+                    if (100 < total++)
+                    {
+                        Debug.LogWarning(total);
+                        break;
+                    }
+                    foreach (var handle in next.values.GetSpan())
+                    {
+                        handle.TryCancel();
+                    }
+
+                    next.values = default;
+                    next.prev = next;
+                    next = next.nextNode;
+                    if(next==lastOrHeadNode)break;
+                    poolCount++;
+                } while (next != null);
+                if(next != null&&next!=this)
                 {
                     foreach (var handle in next.values.GetSpan())
                     {
                         handle.TryCancel();
                     }
-                    next.values=default;
+                    next.values = default;
                     next.prev = next;
-                    next = next.nextNode;
-                    poolCount++;
                 }
                 
                 lastOrHeadNode.nextNode = pool;
@@ -94,19 +112,30 @@ namespace RayTween.Internal
 
         public bool Add(TweenHandle handle,out HandleList newList)
         {
-            
-            var last = GetLast();
-            if (last.values.Length < 8)
+            if (values.Add(handle))
             {
-                last.values.Add(handle);
+                newList = null;
+                return false;
+            }
+            var last = lastOrHeadNode;
+            if (last!=this&&last.values.Add(handle))
+            {
                 newList = default;
                 return false;
             }
             else
             {
+                CompressHead(8);
+                if(values.Length<8)
+                {
+                    values.Add(handle);
+                    newList = default;
+                    return false;
+                }
                 var newLast = CreateOrGet(last);
                 SetLast(newLast);
                 newLast.values.Add(handle);
+                newLast.values.Add(values.RemoveLast());
                 newList = newLast;
                 return true;
             }
@@ -114,52 +143,30 @@ namespace RayTween.Internal
 
         public bool IsPooled => prev == this;
 
-        public void CompressList()
-        {
-            var last = GetLast();
-            if (last == this)
-            {
-                var span = values.GetSpan();
-                
-                for (int i = 0; i < values.Length; i++)
-                {
-                    ref var handle = ref span[i];
-                    if (!handle.IsActive())
-                    {
-                        values.Length--;
-                        handle = span[values.Length];
-                        span[values.Length] = default;
-                        i--;
-                        // Debug.Log("Compress");
-                    }
-                }
 
-              
-            }
-            else
+         void CompressHead(int threshold)
+        {
+            if (prev != null)
             {
-                if (last.values.Length <= 0)
+                Debug.LogWarning("Don't compress");
+                return ;
+            }
+            if(prev==this)return;
+            if (Length<threshold)return;
+            var span = values.GetSpan();
+            Span<TweenHandle> newHandles = stackalloc TweenHandle[values.Length];
+            var activeCount = 0;
+            for (int i = 0; i < span.Length; i++)
+            {
+                ref var handle = ref span[i];
+                if (handle.IsActive())
                 {
-                    return ;
-                }
-                var span = values.GetSpan();
-                for (int i = 0; i < values.Length; i++)
-                {
-                    ref var handle = ref span[i];
-                    if (!handle.IsActive())
-                    {
-                        handle = last.values.RemoveLast();
-                        if (last.Length == 0)
-                        {
-                            return ;
-                        }
-                        i--;
-                    }
+                    newHandles[activeCount++] = handle;
                 }
             }
-          
+            newHandles.CopyTo(span);
+            values.Length = activeCount;
         }
-        
         public bool Compress()
         {
             if (prev == null)
@@ -180,49 +187,30 @@ namespace RayTween.Internal
                 }
                 return true;
             }
+            var span = values.GetSpan();
+            Span<TweenHandle> newHandles = stackalloc TweenHandle[values.Length];
+            var activeCount = 0;
+            for (int i = 0; i < span.Length; i++)
+            {
+                ref var handle = ref span[i];
+                if (handle.IsActive())
+                {
+                    newHandles[activeCount++] = handle;
+                }
+            }
+            newHandles.CopyTo(span);
+            values.Length = activeCount;
+            
             var last = GetLast();
-            if (last == this)
+            if (values.Length != 0&&last != this && values.Length + last.values.Length <= 8)
             {
-                var span = values.GetSpan();
-                
-                for (int i = 0; i < values.Length; i++)
+                foreach (ref var h in newHandles[..activeCount])
                 {
-                    ref var handle = ref span[i];
-                    if (!handle.IsActive())
-                    {
-                        values.Length--;
-                        handle = span[values.Length];
-                        span[values.Length] = default;
-                        i--;
-                       // Debug.Log("Compress");
-                    }
+                    last.values.Add(h);
                 }
-
-              
+                values = default;
             }
-            else
-            {
-                if (last.values.Length <= 0)
-                {
-                    return false;
-                }
-                var span = values.GetSpan();
-                for (int i = 0; i < values.Length; i++)
-                {
-                    ref var handle = ref span[i];
-                    if (!handle.IsActive())
-                    {
-                        handle = last.values.RemoveLast();
-                        if (last.Length == 0)
-                        {
-                            (values, last.values) = (last.values, values);
-                            
-                          break;
-                        }
-                        i--;
-                    }
-                }
-            }
+            //Debug.Log(values.Length);
             if (values.Length == 0)
             {
                 prev.nextNode = nextNode;
@@ -267,20 +255,26 @@ namespace RayTween.Internal
                 }
                 fixed (int* p = this)
                 {
-                    return ((TweenHandle*)p)[Length-=1];
+                    Length--;
+                    var last = ((TweenHandle*)p)[Length];
+                    ((TweenHandle*)p)[Length] = default;
+                    return last;
                 }
             }
 
-            public void Add(TweenHandle handle)
+            public bool Add(TweenHandle handle)
             {
-                if (Length <0||7<Length )
+                if(Length<0||8<Length)
                 {
                     throw new Exception(Length.ToString());
                 }
+                if (Length == 8) return false;
                 fixed (int* p = this)
                 {
                     ((TweenHandle*)p)[Length++] = handle;
                 }
+
+                return true;
             }
         }
     }
